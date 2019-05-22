@@ -39,7 +39,7 @@ like to get in touch. See our [Contributing](CONTRIBUTING.md) page for more deta
 ## License
 
 VSDK is release as open-source under the MIT License. Please
-refer to [LICENSE.md](LICENSE.md) for more information.
+refer to the [License](LICENSE) page for more information.
 
 ## Supported Devices and Features
 
