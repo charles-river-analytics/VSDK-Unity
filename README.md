@@ -20,26 +20,11 @@ event driven behavior based on naturalistic interactions
 
 ## Getting Started
 
-VSDK has a number of project-focused tutorials currently in
-development, available soon. Check back here for more information in the coming days.
+VSDK has several project-focused tutorials to help get you up to speed. Tutorials can be found [on the GitHub Wiki](https://github.com/charles-river-analytics/VSDK/wiki)
 
 ## Documentation
 
 Documentation can be found on our [GitHub Wiki](https://github.com/charles-river-analytics/VSDK/wiki)
-
-## Support
-
-For questions or additional help, email us at virtuoso@cra.com
-
-## Contributions
-
-If you are interested in contributing to development or becoming involved in our development community, we’d
-like to get in touch. See our [Contributing](CONTRIBUTING.md) page for more details.
-
-## License
-
-VSDK is release as open-source under the MIT License. Please
-refer to the [License](LICENSE) page for more information.
 
 ## Supported Devices
 
@@ -64,3 +49,17 @@ For a complete list of supported and planned devices, refer to our [Device Roadm
 
 ## Development Roadmap
 For our roadmap of upcoming devices and features, refer to our [Device Roadmap](https://github.com/charles-river-analytics/VSDK/wiki/Device-Roadmap) and [Feature Roadmap](https://github.com/charles-river-analytics/VSDK/wiki/Feature-Roadmap) respectively.
+
+## Support
+
+For questions or additional help, email us at virtuoso@cra.com
+
+## Contributions
+
+If you are interested in contributing to development or becoming involved in our development community, we’d
+like to get in touch. See our [Contributing](CONTRIBUTING.md) page for more details.
+
+## License
+
+VSDK is release as open-source under the MIT License. Please
+refer to the [License](LICENSE) page for more information.
