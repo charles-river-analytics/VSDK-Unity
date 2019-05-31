@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1def597fc958b34428d434d67f612575, type: 3}
+  m_Name: ChestBack
+  m_EditorClassIdentifier: 
+  affectableBodyParts: 7
+  affectedAreaList:
+  - startHeight: 0
+    endHeight: 0.2
+    startAngle: 180
+    endAngle: 225
+  - startHeight: 0
+    endHeight: 0.2
+    startAngle: 225
+    endAngle: 270
+  - startHeight: 0
+    endHeight: 0.2
+    startAngle: 270
+    endAngle: 315
+  - startHeight: 0
+    endHeight: 0.2
+    startAngle: 315
+    endAngle: 359
+  - startHeight: 0.2
+    endHeight: 0.4
+    startAngle: 180
+    endAngle: 225
+  - startHeight: 0.2
+    endHeight: 0.4
+    startAngle: 225
+    endAngle: 270
+  - startHeight: 0.2
+    endHeight: 0.4
+    startAngle: 270
+    endAngle: 315
+  - startHeight: 0.2
+    endHeight: 0.4
+    startAngle: 315
+    endAngle: 359
+  - startHeight: 0.4
+    endHeight: 0.6
+    startAngle: 180
+    endAngle: 225
+  - startHeight: 0.4
+    endHeight: 0.6
+    startAngle: 225
+    endAngle: 270
+  - startHeight: 0.4
+    endHeight: 0.6
+    startAngle: 270
+    endAngle: 315
+  - startHeight: 0.4
+    endHeight: 0.6
+    startAngle: 315
+    endAngle: 359
+  - startHeight: 0.6
+    endHeight: 0.8
+    startAngle: 180
+    endAngle: 225
+  - startHeight: 0.6
+    endHeight: 0.8
+    startAngle: 225
+    endAngle: 270
+  - startHeight: 0.6
+    endHeight: 0.8
+    startAngle: 270
+    endAngle: 315
+  - startHeight: 0.6
+    endHeight: 0.8
+    startAngle: 315
+    endAngle: 359
+  - startHeight: 0.8
+    endHeight: 1
+    startAngle: 180
+    endAngle: 225
+  - startHeight: 0.8
+    endHeight: 1
+    startAngle: 225
+    endAngle: 270
+  - startHeight: 0.8
+    endHeight: 1
+    startAngle: 270
+    endAngle: 315
+  - startHeight: 0.8
+    endHeight: 1
+    startAngle: 315
+    endAngle: 359
