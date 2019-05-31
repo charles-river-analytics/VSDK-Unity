@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 8fb793e13bdc91540a307f89e5363cdf
+timeCreated: 1553805954
+licenseType: Pro
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - hitLocationPrefab: {fileID: 1869474814193224, guid: d5a00861e7f46694596ab7fa221e9880,
+      type: 2}
+  - activeHitMaterial: {fileID: 2100000, guid: cfb9c0ad0f7cc3f489fe4a69ed117f38, type: 2}
+  - inactiveHitMaterial: {fileID: 2100000, guid: 5b923cd611d17a9419f5788d216210e3,
+      type: 2}
+  - capsuleMaterial: {fileID: 2100000, guid: 5969cc5b3b50cad4595ffacc3129c769, type: 2}
+  - lineRendererMaterial: {fileID: 2100000, guid: 8e0e7d5234ddbdc48829ca867689274d,
+      type: 2}
+  - lineRendererData: {fileID: 11400000, guid: 4b6ada9ca411ada48b621c9611310349, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

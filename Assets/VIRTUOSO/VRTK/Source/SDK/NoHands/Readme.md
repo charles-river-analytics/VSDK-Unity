@@ -1,0 +1,1 @@
+This SDK is a Hand SDK that allows you to use VSDK without any hand tracking.

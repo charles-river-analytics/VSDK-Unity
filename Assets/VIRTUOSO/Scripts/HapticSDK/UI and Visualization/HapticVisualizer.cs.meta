@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: d5a4a905045b12a42a41413d4bef4b6c
+timeCreated: 1556032545
+licenseType: Pro
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - hapticPatternVisualMesh: {fileID: 10207, guid: 0000000000000000e000000000000000,
+      type: 0}
+  - hapticPatternVisualMaterial: {fileID: 2100000, guid: 3d9809e611ea4f040aa4ba1c97679ff1,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

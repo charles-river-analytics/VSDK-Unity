@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1def597fc958b34428d434d67f612575, type: 3}
+  m_Name: Head
+  m_EditorClassIdentifier: 
+  affectableBodyParts: 10
+  affectedAreaList:
+  - startHeight: 0
+    endHeight: 1
+    startAngle: 0
+    endAngle: 30
+  - startHeight: 0
+    endHeight: 1
+    startAngle: 30
+    endAngle: 60
+  - startHeight: 0
+    endHeight: 1
+    startAngle: 60
+    endAngle: 90
+  - startHeight: 0
+    endHeight: 1
+    startAngle: 90
+    endAngle: 120
+  - startHeight: 0
+    endHeight: 1
+    startAngle: 120
+    endAngle: 150
+  - startHeight: 0
+    endHeight: 1
+    startAngle: 150
+    endAngle: 180

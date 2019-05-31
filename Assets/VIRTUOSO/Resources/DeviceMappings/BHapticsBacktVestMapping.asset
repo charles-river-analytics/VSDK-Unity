@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 652134711068581419c729823ab6e5d3, type: 3}
+  m_Name: BHapticsBacktVestMapping
+  m_EditorClassIdentifier: 
+  affectedBodyArea: {fileID: 11400000, guid: ed634900b26ad4a448307e4f7619a75e, type: 2}
+  mapping:
+  - indexMapping: 00000000
+  - indexMapping: 01000000
+  - indexMapping: 02000000
+  - indexMapping: 03000000
+  - indexMapping: 04000000
+  - indexMapping: 05000000
+  - indexMapping: 06000000
+  - indexMapping: 07000000
+  - indexMapping: 08000000
+  - indexMapping: 09000000
+  - indexMapping: 0a000000
+  - indexMapping: 0b000000
+  - indexMapping: 0c000000
+  - indexMapping: 0d000000
+  - indexMapping: 0e000000
+  - indexMapping: 0f000000
+  - indexMapping: 10000000
+  - indexMapping: 11000000
+  - indexMapping: 12000000
+  - indexMapping: 13000000

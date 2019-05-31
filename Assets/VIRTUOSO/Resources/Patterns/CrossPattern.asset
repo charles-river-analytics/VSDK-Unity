@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c110b34a208c8c43abc687227bfacc0, type: 3}
+  m_Name: CrossPattern
+  m_EditorClassIdentifier: 
+  curveList:
+  - {fileID: 11400000, guid: 356d42e602239df44abce2a087449f86, type: 2}
+  - {fileID: 11400000, guid: 579b4f9b12bdbf4418d5760d4437ec4c, type: 2}
+  collisionResolution: 2
+  curvePriorityIndex: 0
+  playbackTiming: 1
+  customPlaybackTiming: 0.333
+  heightOvershootResolution: 2
+  angleOvershootResolution: 2
+  offsetUse: 1
