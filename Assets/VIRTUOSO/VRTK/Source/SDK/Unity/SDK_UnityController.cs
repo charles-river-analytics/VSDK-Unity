@@ -31,6 +31,53 @@ namespace VRTK
         protected VRTK_VelocityEstimator cachedLeftVelocityEstimator;
         protected VRTK_VelocityEstimator cachedRightVelocityEstimator;
         protected Vector2 buttonPressThreshold = new Vector2(0.2f, 0.5f);
+
+#if UNITY_2019_1_OR_NEWER
+
+        public class UnityXRInputState
+        {
+            public Dictionary<ButtonPressTypes, bool> buttonState;
+            public UnityXRInputState()
+            {
+                buttonState = new Dictionary<ButtonPressTypes, bool>()
+                {
+                    { ButtonPressTypes.Press , false },
+                    { ButtonPressTypes.PressDown, false },
+                    { ButtonPressTypes.PressUp, false },
+                    { ButtonPressTypes.Touch, false },
+                    { ButtonPressTypes.TouchDown, false },
+                    { ButtonPressTypes.TouchUp, false }
+                };
+            }
+        }
+
+        public Dictionary<ButtonTypes, UnityXRInputState> rightHandCurrentFrameButtonStates = new Dictionary<ButtonTypes, UnityXRInputState>()
+        {
+            { ButtonTypes.ButtonOne, new UnityXRInputState() },
+            { ButtonTypes.ButtonTwo, new UnityXRInputState() },
+            { ButtonTypes.Grip, new UnityXRInputState() },
+            { ButtonTypes.MiddleFinger, new UnityXRInputState() },
+            { ButtonTypes.PinkyFinger, new UnityXRInputState() },
+            { ButtonTypes.RingFinger, new UnityXRInputState() },
+            { ButtonTypes.StartMenu, new UnityXRInputState() },
+            { ButtonTypes.Touchpad, new UnityXRInputState() },
+            { ButtonTypes.Trigger, new UnityXRInputState() }
+        };
+
+        public Dictionary<ButtonTypes, UnityXRInputState> leftHandCurrentFrameButtonStates = new Dictionary<ButtonTypes, UnityXRInputState>()
+        {
+            { ButtonTypes.ButtonOne, new UnityXRInputState() },
+            { ButtonTypes.ButtonTwo, new UnityXRInputState() },
+            { ButtonTypes.Grip, new UnityXRInputState() },
+            { ButtonTypes.MiddleFinger, new UnityXRInputState() },
+            { ButtonTypes.PinkyFinger, new UnityXRInputState() },
+            { ButtonTypes.RingFinger, new UnityXRInputState() },
+            { ButtonTypes.StartMenu, new UnityXRInputState() },
+            { ButtonTypes.Touchpad, new UnityXRInputState() },
+            { ButtonTypes.Trigger, new UnityXRInputState() }
+        };
+
+#elif !UNITY_2019_1_OR_NEWER
         protected Dictionary<ButtonTypes, bool> rightAxisButtonPressState = new Dictionary<ButtonTypes, bool>()
         {
             { ButtonTypes.Trigger, false },
@@ -42,7 +89,7 @@ namespace VRTK
             { ButtonTypes.Trigger, false },
             { ButtonTypes.Grip, false },
         };
-#if !UNITY_2019_1_OR_NEWER
+
         protected List<string> validRightHands = new List<string>()
         {
             "OpenVR Controller - Right",
@@ -154,6 +201,84 @@ namespace VRTK
         /// <param name="options">A dictionary of generic options that can be used to within the update.</param>
         public override void ProcessUpdate(VRTK_ControllerReference controllerReference, Dictionary<string, object> options)
         {
+            if (controllerReference.hand == ControllerHand.Left)
+            {
+                ProcessUnityXRInput(leftHandCurrentFrameButtonStates, leftControllerXRDevice);
+            }
+            else
+            {
+                ProcessUnityXRInput(rightHandCurrentFrameButtonStates, rightControllerXRDevice);
+            }
+        }
+
+        /// <summary>
+        /// Uses Unity XR input to determine the status of each button on the controller.
+        /// </summary>
+        protected void ProcessUnityXRInput(Dictionary<ButtonTypes,UnityXRInputState> handState, InputDevice currentController)
+        {
+            if(currentController.isValid != true)
+            {
+                return;
+            }
+
+            // get current button values
+            foreach (ButtonTypes buttonType in handState.Keys)
+            {
+                bool lastFrameTouchValue = handState[buttonType].buttonState[ButtonPressTypes.Touch];
+                bool lastFramePressValue = handState[buttonType].buttonState[ButtonPressTypes.Press];
+
+                bool currentFrameTouchValue = false;
+                bool currentFramePressValue = false;
+                bool buttonValueOut;
+                float floatValueOut = 0.0f;
+
+                switch (buttonType)
+                {
+                    case ButtonTypes.ButtonOne:
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.primaryTouch, out buttonValueOut) && buttonValueOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonValueOut) && buttonValueOut);
+                        bool buttonSuccess = currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonValueOut);
+                        break;
+                    case ButtonTypes.ButtonTwo:
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.secondaryTouch, out buttonValueOut) && buttonValueOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.secondaryButton, out buttonValueOut) && buttonValueOut);
+                        break;
+                    case ButtonTypes.Grip:
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.grip, out floatValueOut) && (floatValueOut > 0.0f));
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.gripButton, out buttonValueOut) && buttonValueOut);
+                        break;
+                    case ButtonTypes.MiddleFinger:
+                        // not currently supported through Unity XR
+                        break;
+                    case ButtonTypes.PinkyFinger:
+                        // not currently supported through Unity XR
+                        break;
+                    case ButtonTypes.RingFinger:
+                        // not currently supported through Unity XR
+                        break;
+                    case ButtonTypes.Touchpad:
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out buttonValueOut) && buttonValueOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out buttonValueOut) && buttonValueOut);
+                        break;
+                    case ButtonTypes.StartMenu:
+                        // menu touch not supported through Unity XR
+                        currentFrameTouchValue = false;
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.menuButton, out buttonValueOut) && buttonValueOut);
+                        break;
+                    case ButtonTypes.Trigger:
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.trigger, out floatValueOut) && (floatValueOut > 0.0f));
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.triggerButton, out buttonValueOut) && buttonValueOut);
+                        break;
+
+                }
+
+                handState[buttonType].buttonState[ButtonPressTypes.Press] = currentFramePressValue;
+                handState[buttonType].buttonState[ButtonPressTypes.PressDown] = currentFramePressValue && (!lastFramePressValue);
+                handState[buttonType].buttonState[ButtonPressTypes.PressUp] = (!currentFramePressValue) && lastFramePressValue;
+                handState[buttonType].buttonState[ButtonPressTypes.Touch] = currentFrameTouchValue;
+                handState[buttonType].buttonState[ButtonPressTypes.TouchDown] = currentFrameTouchValue && (!lastFrameTouchValue);
+                handState[buttonType].buttonState[ButtonPressTypes.TouchUp] = (!currentFrameTouchValue) && lastFrameTouchValue;
+            }
         }
 
         /// <summary>
@@ -163,6 +288,7 @@ namespace VRTK
         /// <param name="options">A dictionary of generic options that can be used to within the fixed update.</param>
         public override void ProcessFixedUpdate(VRTK_ControllerReference controllerReference, Dictionary<string, object> options)
         {
+            // no op
         }
 
         /// <summary>
@@ -606,105 +732,22 @@ namespace VRTK
                 case ButtonTypes.StartMenu:
                     return IsButtonPressed(pressType, touchButton, pressButton);
             }
+            return false;
 #else
-            // TODO controller validity check
-
-            InputDevice currentController = isRightController ? rightControllerXRDevice : leftControllerXRDevice;
 
             bool buttonValueOut = false;
-            switch (buttonType)
+
+            Dictionary<ButtonTypes, UnityXRInputState> currentHandState = isRightController? rightHandCurrentFrameButtonStates : leftHandCurrentFrameButtonStates;
+
+            if(currentHandState.ContainsKey(buttonType) && currentHandState[buttonType].buttonState.ContainsKey(pressType))
             {
-                case ButtonTypes.Trigger:
-                    switch (pressType)
-                    {
-                        // this code isn't responsible for identifying up/down state of buttons; that is handled by the calling method
-                        case ButtonPressTypes.Touch:
-                        case ButtonPressTypes.TouchDown:
-                        case ButtonPressTypes.TouchUp:
-                            float touchValue = 0.0f;
-                            // no direct access to trigger touch, but this should be the same on any supported controller
-                            if (currentController.TryGetFeatureValue(CommonUsages.indexTouch, out touchValue))
-                            {
-                                return touchValue > 0.0f;
-                            }
-                            return false;
-                        case ButtonPressTypes.Press:
-                        case ButtonPressTypes.PressDown:
-                        case ButtonPressTypes.PressUp:
-                            return (currentController.TryGetFeatureValue(CommonUsages.triggerButton, out buttonValueOut) && buttonValueOut);
-                    }
-                    break;
-                // TODO touch for following buttons
-                case ButtonTypes.Grip:
-                    switch (pressType)
-                    {
-                        case ButtonPressTypes.Touch:
-                        case ButtonPressTypes.TouchDown:
-                        case ButtonPressTypes.TouchUp:
-                            // not supported by UnityXR at this time
-                            return false;
-                        case ButtonPressTypes.Press:
-                        case ButtonPressTypes.PressDown:
-                        case ButtonPressTypes.PressUp:
-                            return (currentController.TryGetFeatureValue(CommonUsages.gripButton, out buttonValueOut) && buttonValueOut);
-                    }
-                    return false;
-                case ButtonTypes.Touchpad:
-                    switch (pressType)
-                    {
-                        case ButtonPressTypes.Touch:
-                        case ButtonPressTypes.TouchDown:
-                        case ButtonPressTypes.TouchUp:
-                            return (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out buttonValueOut) && buttonValueOut);
-                        case ButtonPressTypes.Press:
-                        case ButtonPressTypes.PressDown:
-                        case ButtonPressTypes.PressUp:
-                            return (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out buttonValueOut) && buttonValueOut);
-                    }
-                    return false;
-                case ButtonTypes.ButtonOne:
-                    switch (pressType)
-                    {
-                        case ButtonPressTypes.Touch:
-                        case ButtonPressTypes.TouchDown:
-                        case ButtonPressTypes.TouchUp:
-                            return (currentController.TryGetFeatureValue(CommonUsages.primaryTouch, out buttonValueOut) && buttonValueOut);
-                        case ButtonPressTypes.Press:
-                        case ButtonPressTypes.PressDown:
-                        case ButtonPressTypes.PressUp:
-                            return (currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonValueOut) && buttonValueOut);
-                    }
-                    return false;
-                case ButtonTypes.ButtonTwo:
-                    switch (pressType)
-                    {
-                        case ButtonPressTypes.Touch:
-                        case ButtonPressTypes.TouchDown:
-                        case ButtonPressTypes.TouchUp:
-                            return (currentController.TryGetFeatureValue(CommonUsages.secondaryTouch, out buttonValueOut) && buttonValueOut);
-                        case ButtonPressTypes.Press:
-                        case ButtonPressTypes.PressDown:
-                        case ButtonPressTypes.PressUp:
-                            return (currentController.TryGetFeatureValue(CommonUsages.secondaryButton, out buttonValueOut) && buttonValueOut);
-                    }
-                    return false;
-                case ButtonTypes.StartMenu:
-                    switch (pressType)
-                    {
-                        case ButtonPressTypes.Touch:
-                        case ButtonPressTypes.TouchDown:
-                        case ButtonPressTypes.TouchUp:
-                            // not supported by Unity XR
-                            return false;
-                        case ButtonPressTypes.Press:
-                        case ButtonPressTypes.PressDown:
-                        case ButtonPressTypes.PressUp:
-                            return (currentController.TryGetFeatureValue(CommonUsages.menuButton, out buttonValueOut) && buttonValueOut);
-                    }
-                    return false;
+                buttonValueOut = currentHandState[buttonType].buttonState[pressType];
             }
+
+           
+            return buttonValueOut;
+            
 #endif
-            return false;
         }
 
         protected virtual bool IsMouseAliasPress(bool validController, ButtonTypes buttonType, ButtonPressTypes pressType)
@@ -768,10 +811,34 @@ namespace VRTK
         }
 
         protected virtual bool IsAxisButtonPress(VRTK_ControllerReference controllerReference, ButtonTypes buttonType, ButtonPressTypes pressType)
-        {
+        {   
             bool isRightController = (controllerReference.hand == ControllerHand.Right);
+#if UNITY_2019_1_OR_NEWER
+            // not used in 2019 or newer
+            return false;
+#else
             Vector2 axisValue = GetButtonAxis(buttonType, controllerReference);
             return IsAxisOnHandButtonPress((isRightController ? rightAxisButtonPressState : leftAxisButtonPressState), buttonType, pressType, axisValue);
+#endif
+        }
+
+        protected bool GetButtonPressState(Dictionary<ButtonTypes, bool> previousState, ButtonTypes buttonType, ButtonPressTypes pressType, bool currentValue)
+        {
+            switch (pressType) {
+                case ButtonPressTypes.PressDown:
+                    {
+                        if (previousState[buttonType] == false && currentValue == true)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+        }
+
+            return false;
         }
 
         protected virtual bool GetAxisPressState(bool currentState, float axisValue)
