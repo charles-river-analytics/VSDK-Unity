@@ -2,11 +2,19 @@
 namespace VRTK
 {
     using UnityEngine;
+#if UNITY_2019_1_OR_NEWER
+    using UnityEngine.XR;
+#endif
     using System;
     using System.Collections.Generic;
 
     /// <summary>
     /// The Unity Controller SDK script provides a bridge  to the base Unity input device support.
+    /// 
+    /// In Unity versions greater than 2019.1, this makes use of the Unity XR Input System which allows for a much cleaner implementation.
+    /// Older versions rely on Unity's standard input system, which can be more difficult to configure.
+    /// 
+    /// Last Editor: Dan Duggan (dduggan@cra.com) Updated: September 2019
     /// </summary>
     [SDK_Description(typeof(SDK_UnitySystem))]
     [SDK_Description(typeof(SDK_UnitySystem), 1)]
@@ -34,7 +42,7 @@ namespace VRTK
             { ButtonTypes.Trigger, false },
             { ButtonTypes.Grip, false },
         };
-
+#if !UNITY_2019_1_OR_NEWER
         protected List<string> validRightHands = new List<string>()
         {
             "OpenVR Controller - Right",
@@ -128,6 +136,14 @@ namespace VRTK
             { ButtonTypes.ButtonTwo, KeyCode.JoystickButton2 },
             { ButtonTypes.StartMenu, KeyCode.JoystickButton7 }
         };
+#endif
+
+#if UNITY_2019_1_OR_NEWER
+        protected InputDevice leftControllerXRDevice;
+        protected InputDevice rightControllerXRDevice;
+#endif
+
+        
 
         private bool settingCaches = false;
 
@@ -157,7 +173,12 @@ namespace VRTK
         public override ControllerType GetCurrentControllerType(VRTK_ControllerReference controllerReference = null)
         {
             SetTrackedControllerCaches();
+#if !UNITY_2019_1_OR_NEWER
             return cachedControllerType;
+#else
+            // not used post-2019
+            return ControllerType.Custom;
+#endif
         }
 
         /// <summary>
@@ -486,7 +507,7 @@ namespace VRTK
             {
                 return Vector2.zero;
             }
-
+#if !UNITY_2019_1_OR_NEWER
             switch (buttonType)
             {
                 case ButtonTypes.Trigger:
@@ -496,6 +517,24 @@ namespace VRTK
                 case ButtonTypes.Touchpad:
                     return new Vector2(GetAxisValue((isRightController ? cachedRightTracker.touchpadHorizontalAxisName : cachedLeftTracker.touchpadHorizontalAxisName)), GetAxisValue((isRightController ? cachedRightTracker.touchpadVerticalAxisName : cachedLeftTracker.touchpadVerticalAxisName)));
             }
+#else
+            InputDevice currentController = isRightController ? rightControllerXRDevice : leftControllerXRDevice;
+            Vector2 vectorValue = Vector2.zero;
+            // TODO
+            switch (buttonType)
+            {
+                case ButtonTypes.Trigger:
+                    break;
+                case ButtonTypes.Grip:
+                    break;
+                case ButtonTypes.Touchpad:
+                    if(currentController.TryGetFeatureValue(CommonUsages.primary2DAxis, out vectorValue))
+                    {
+                        return vectorValue;
+                    }
+                    break;
+            }
+#endif
             return Vector2.zero;
         }
 
@@ -537,6 +576,7 @@ namespace VRTK
 
             bool isRightController = (controllerReference.hand == ControllerHand.Right);
 
+#if !UNITY_2019_1_OR_NEWER
             KeyCode? touchButton = VRTK_SharedMethods.GetDictionaryValue((isRightController ? rightControllerTouchKeyCodes : leftControllerTouchKeyCodes), buttonType);
             KeyCode? pressButton = VRTK_SharedMethods.GetDictionaryValue((isRightController ? rightControllerPressKeyCodes : leftControllerPressKeyCodes), buttonType);
 
@@ -566,6 +606,104 @@ namespace VRTK
                 case ButtonTypes.StartMenu:
                     return IsButtonPressed(pressType, touchButton, pressButton);
             }
+#else
+            // TODO controller validity check
+
+            InputDevice currentController = isRightController ? rightControllerXRDevice : leftControllerXRDevice;
+
+            bool buttonValueOut = false;
+            switch (buttonType)
+            {
+                case ButtonTypes.Trigger:
+                    switch (pressType)
+                    {
+                        // this code isn't responsible for identifying up/down state of buttons; that is handled by the calling method
+                        case ButtonPressTypes.Touch:
+                        case ButtonPressTypes.TouchDown:
+                        case ButtonPressTypes.TouchUp:
+                            float touchValue = 0.0f;
+                            // no direct access to trigger touch, but this should be the same on any supported controller
+                            if (currentController.TryGetFeatureValue(CommonUsages.indexTouch, out touchValue))
+                            {
+                                return touchValue > 0.0f;
+                            }
+                            return false;
+                        case ButtonPressTypes.Press:
+                        case ButtonPressTypes.PressDown:
+                        case ButtonPressTypes.PressUp:
+                            return (currentController.TryGetFeatureValue(CommonUsages.triggerButton, out buttonValueOut) && buttonValueOut);
+                    }
+                    break;
+                // TODO touch for following buttons
+                case ButtonTypes.Grip:
+                    switch (pressType)
+                    {
+                        case ButtonPressTypes.Touch:
+                        case ButtonPressTypes.TouchDown:
+                        case ButtonPressTypes.TouchUp:
+                            // not supported by UnityXR at this time
+                            return false;
+                        case ButtonPressTypes.Press:
+                        case ButtonPressTypes.PressDown:
+                        case ButtonPressTypes.PressUp:
+                            return (currentController.TryGetFeatureValue(CommonUsages.gripButton, out buttonValueOut) && buttonValueOut);
+                    }
+                    return false;
+                case ButtonTypes.Touchpad:
+                    switch (pressType)
+                    {
+                        case ButtonPressTypes.Touch:
+                        case ButtonPressTypes.TouchDown:
+                        case ButtonPressTypes.TouchUp:
+                            return (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out buttonValueOut) && buttonValueOut);
+                        case ButtonPressTypes.Press:
+                        case ButtonPressTypes.PressDown:
+                        case ButtonPressTypes.PressUp:
+                            return (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out buttonValueOut) && buttonValueOut);
+                    }
+                    return false;
+                case ButtonTypes.ButtonOne:
+                    switch (pressType)
+                    {
+                        case ButtonPressTypes.Touch:
+                        case ButtonPressTypes.TouchDown:
+                        case ButtonPressTypes.TouchUp:
+                            return (currentController.TryGetFeatureValue(CommonUsages.primaryTouch, out buttonValueOut) && buttonValueOut);
+                        case ButtonPressTypes.Press:
+                        case ButtonPressTypes.PressDown:
+                        case ButtonPressTypes.PressUp:
+                            return (currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonValueOut) && buttonValueOut);
+                    }
+                    return false;
+                case ButtonTypes.ButtonTwo:
+                    switch (pressType)
+                    {
+                        case ButtonPressTypes.Touch:
+                        case ButtonPressTypes.TouchDown:
+                        case ButtonPressTypes.TouchUp:
+                            return (currentController.TryGetFeatureValue(CommonUsages.secondaryTouch, out buttonValueOut) && buttonValueOut);
+                        case ButtonPressTypes.Press:
+                        case ButtonPressTypes.PressDown:
+                        case ButtonPressTypes.PressUp:
+                            return (currentController.TryGetFeatureValue(CommonUsages.secondaryButton, out buttonValueOut) && buttonValueOut);
+                    }
+                    return false;
+                case ButtonTypes.StartMenu:
+                    switch (pressType)
+                    {
+                        case ButtonPressTypes.Touch:
+                        case ButtonPressTypes.TouchDown:
+                        case ButtonPressTypes.TouchUp:
+                            // not supported by Unity XR
+                            return false;
+                        case ButtonPressTypes.Press:
+                        case ButtonPressTypes.PressDown:
+                        case ButtonPressTypes.PressUp:
+                            return (currentController.TryGetFeatureValue(CommonUsages.menuButton, out buttonValueOut) && buttonValueOut);
+                    }
+                    return false;
+            }
+#endif
             return false;
         }
 
@@ -648,7 +786,7 @@ namespace VRTK
             }
             return currentState;
         }
-
+#if !UNITY_2019_1_OR_NEWER
         protected virtual bool IsButtonPressed(ButtonPressTypes pressType, KeyCode? touchKey, KeyCode? pressKey)
         {
             switch (pressType)
@@ -668,6 +806,7 @@ namespace VRTK
             }
             return false;
         }
+#endif
 
         protected virtual void SetTrackedControllerCaches(bool forceRefresh = false)
         {
@@ -696,6 +835,14 @@ namespace VRTK
                         cachedLeftTracker = cachedLeftController.GetComponent<SDK_UnityControllerTracker>();
                         cachedLeftVelocityEstimator = cachedLeftController.GetComponent<VRTK_VelocityEstimator>();
                         SetControllerButtons(ControllerHand.Left);
+#if UNITY_2019_1_OR_NEWER
+                        List<InputDevice> leftHandDevices = new List<InputDevice>();
+                        InputDevices.GetDevicesAtXRNode(XRNode.LeftHand, leftHandDevices);
+                        if(leftHandDevices.Count > 0)
+                        {
+                            this.leftControllerXRDevice = leftHandDevices[0];
+                        }
+#endif
                     }
                 }
                 if (cachedRightController == null && sdkManager.loadedSetup.actualRightController != null)
@@ -707,6 +854,14 @@ namespace VRTK
                         cachedRightTracker = cachedRightController.GetComponent<SDK_UnityControllerTracker>();
                         cachedRightVelocityEstimator = cachedRightController.GetComponent<VRTK_VelocityEstimator>();
                         SetControllerButtons(ControllerHand.Right);
+#if UNITY_2019_1_OR_NEWER
+                        List<InputDevice> rightHandDevices = new List<InputDevice>();
+                        InputDevices.GetDevicesAtXRNode(XRNode.RightHand, rightHandDevices);
+                        if (rightHandDevices.Count > 0)
+                        {
+                            this.rightControllerXRDevice = rightHandDevices[0];
+                        }
+#endif
                     }
                 }
             }
@@ -716,6 +871,7 @@ namespace VRTK
 
         protected virtual void SetControllerButtons(ControllerHand hand)
         {
+#if !UNITY_2019_1_OR_NEWER
             List<string> checkhands = (hand == ControllerHand.Right ? validRightHands : validLeftHands);
 
             bool joystickFound = false;
@@ -760,10 +916,12 @@ namespace VRTK
             {
                 VRTK_Logger.Warn("Failed setting controller buttons on [" + hand + "] due to no valid joystick type found in `GetJoyStickNames` -> " + string.Join(", ", availableJoysticks));
             }
+#endif
         }
 
         protected virtual void SetCachedControllerType(string givenType)
         {
+#if !UNITY_2019_1_OR_NEWER
             givenType = givenType.ToLower();
             //try direct matching
             switch (givenType)
@@ -793,10 +951,12 @@ namespace VRTK
             {
                 cachedControllerType = ControllerType.Oculus_OculusTouch;
             }
+#endif
         }
 
         protected virtual void SetControllerButtonValues(ref Dictionary<ButtonTypes, KeyCode?> touchKeyCodes, ref Dictionary<ButtonTypes, KeyCode?> pressKeyCodes, int joystickIndex, int[] touchCodes, int[] pressCodes)
         {
+#if !UNITY_2019_1_OR_NEWER
             VRTK_SharedMethods.AddDictionaryValue(touchKeyCodes, ButtonTypes.Trigger, StringToKeyCode(joystickIndex, touchCodes[0]), true);
             VRTK_SharedMethods.AddDictionaryValue(touchKeyCodes, ButtonTypes.Touchpad, StringToKeyCode(joystickIndex, touchCodes[1]), true);
             VRTK_SharedMethods.AddDictionaryValue(touchKeyCodes, ButtonTypes.ButtonOne, StringToKeyCode(joystickIndex, touchCodes[2]), true);
@@ -806,6 +966,7 @@ namespace VRTK
             VRTK_SharedMethods.AddDictionaryValue(pressKeyCodes, ButtonTypes.ButtonOne, StringToKeyCode(joystickIndex, pressCodes[1]), true);
             VRTK_SharedMethods.AddDictionaryValue(pressKeyCodes, ButtonTypes.ButtonTwo, StringToKeyCode(joystickIndex, pressCodes[2]), true);
             VRTK_SharedMethods.AddDictionaryValue(pressKeyCodes, ButtonTypes.StartMenu, StringToKeyCode(joystickIndex, pressCodes[3]), true);
+#endif
         }
 
         protected virtual KeyCode StringToKeyCode(int index, int code)
