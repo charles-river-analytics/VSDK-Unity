@@ -244,7 +244,8 @@ namespace VRTK
                         currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.secondaryButton, out buttonValueOut) && buttonValueOut);
                         break;
                     case ButtonTypes.Grip:
-                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.grip, out floatValueOut) && (floatValueOut > 0.0f));
+                        // no reliable method for getting this value
+                        currentFrameTouchValue = false;
                         currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.gripButton, out buttonValueOut) && buttonValueOut);
                         break;
                     case ButtonTypes.MiddleFinger:
@@ -266,7 +267,8 @@ namespace VRTK
                         currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.menuButton, out buttonValueOut) && buttonValueOut);
                         break;
                     case ButtonTypes.Trigger:
-                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.trigger, out floatValueOut) && (floatValueOut > 0.0f));
+                        // no reliable way for getting this value
+                        currentFrameTouchValue = false;
                         currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.triggerButton, out buttonValueOut) && buttonValueOut);
                         break;
 

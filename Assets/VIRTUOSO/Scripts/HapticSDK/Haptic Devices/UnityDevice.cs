@@ -50,10 +50,14 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         {
             if(hapticDevice.isValid)
             {
-                bool successful = hapticDevice.SendHapticImpulse(hapticChannel, intensity, hapticDuration);
-                if(! successful)
+                HapticCapabilities hapticCapabilities;
+                if (hapticDevice.TryGetHapticCapabilities(out hapticCapabilities) && hapticCapabilities.supportsImpulse)
                 {
-                    Debug.LogWarningFormat("Unity XR Haptic Device {0} failed to play haptics");
+                    bool successful = hapticDevice.SendHapticImpulse(hapticChannel, intensity);
+                    if (!successful)
+                    {
+                        Debug.LogWarningFormat("Unity XR Haptic Device {0} failed to play haptics");
+                    }
                 }
             }
             else
