@@ -77,6 +77,8 @@ namespace VRTK
             { ButtonTypes.Trigger, new UnityXRInputState() }
         };
 
+        protected float triggerActivationThreshold = 1.0f;
+
 #elif !UNITY_2019_1_OR_NEWER
         protected Dictionary<ButtonTypes, bool> rightAxisButtonPressState = new Dictionary<ButtonTypes, bool>()
         {
@@ -269,7 +271,7 @@ namespace VRTK
                     case ButtonTypes.Trigger:
                         // no reliable way for getting this value
                         currentFrameTouchValue = false;
-                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.triggerButton, out buttonValueOut) && buttonValueOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.trigger, out floatValueOut) && (floatValueOut >= triggerActivationThreshold));
                         break;
 
                 }
