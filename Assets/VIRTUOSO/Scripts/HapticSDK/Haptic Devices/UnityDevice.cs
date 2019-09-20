@@ -23,9 +23,11 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
     [HapticSystem("Unity", "Right Controller", "BodyCoordinates/RightHand", typeof(SDK_UnityController), true)]
     public class UnityDevice : HapticDevice
     {
+#if UNITY_2018_3_OR_NEWER
         #region Protected Variables
         // Indicates which hand this object corresponds to
         protected XRNode nodeType;
+        
         // Holds a reference to the Unity XR device for haptic feedback
         protected InputDevice hapticDevice;
 
@@ -36,7 +38,11 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         #region Haptic Device Behavior
         protected override void CancelHaptics()
         {
+#if UNITY_2019_OR_NEWER
             if(hapticDevice.isValid)
+#elif UNITY_2018_3_OR_NEWER
+            if(hapticDevice.IsValid)
+#endif
             {
                 hapticDevice.StopHaptics();
             }
@@ -48,7 +54,11 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
 
         protected override void StartHaptics(HumanBodyBones bodyPart, BodyCoordinateHit hitLocation, float intensity)
         {
+#if UNITY_2019_OR_NEWER
             if(hapticDevice.isValid)
+#elif UNITY_2018_3_OR_NEWER
+            if (hapticDevice.IsValid)
+#endif
             {
                 HapticCapabilities hapticCapabilities;
                 if (hapticDevice.TryGetHapticCapabilities(out hapticCapabilities) && hapticCapabilities.supportsImpulse)
@@ -87,5 +97,35 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
             }
         }
         #endregion
+#else
+        protected override void CancelHaptics()
+        {
+           // no op
+        }
+
+        protected override void StartHaptics(HumanBodyBones bodyPart, BodyCoordinateHit hitLocation, float intensity)
+        {
+            // no op
+        }
+
+        /// <summary>
+        /// This override is used to determine the correct XRNode type for this device.
+        /// </summary>
+        public override void ApplyDefaultData(HapticSystemAttribute hapticSystemInfo)
+        {
+            base.ApplyDefaultData(hapticSystemInfo);
+
+            // no op
+        }
+
+        /// <summary>
+        /// This override is called when the VRTK SDK is loaded. This is used here to fetch the Input Device handle for the appropriate controller.
+        /// </summary>
+        protected override void Instance_LoadedSetupChanged(VRTK_SDKManager sender, VRTK_SDKManager.LoadedSetupChangeEventArgs e)
+        {
+            // no op
+        }
+#endif
+
     }
 }

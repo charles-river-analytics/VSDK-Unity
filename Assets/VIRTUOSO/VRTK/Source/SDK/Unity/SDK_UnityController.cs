@@ -203,6 +203,7 @@ namespace VRTK
         /// <param name="options">A dictionary of generic options that can be used to within the update.</param>
         public override void ProcessUpdate(VRTK_ControllerReference controllerReference, Dictionary<string, object> options)
         {
+#if UNITY_2019_1_OR_NEWER
             if (controllerReference.hand == ControllerHand.Left)
             {
                 ProcessUnityXRInput(leftHandCurrentFrameButtonStates, leftControllerXRDevice);
@@ -211,8 +212,10 @@ namespace VRTK
             {
                 ProcessUnityXRInput(rightHandCurrentFrameButtonStates, rightControllerXRDevice);
             }
+#endif
         }
 
+#if UNITY_2019_1_OR_NEWER
         /// <summary>
         /// Uses Unity XR input to determine the status of each button on the controller.
         /// </summary>
@@ -284,6 +287,7 @@ namespace VRTK
                 handState[buttonType].buttonState[ButtonPressTypes.TouchUp] = (!currentFrameTouchValue) && lastFrameTouchValue;
             }
         }
+#endif
 
         /// <summary>
         /// The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
