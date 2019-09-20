@@ -34,8 +34,12 @@ namespace VRTK
 
 #if UNITY_2019_1_OR_NEWER
 
+        /// <summary>
+        /// This nested class is used to track the frame-by-frame button state of each button.
+        /// </summary>
         public class UnityXRInputState
         {
+            // state of each press type for this button
             public Dictionary<ButtonPressTypes, bool> buttonState;
             public UnityXRInputState()
             {
@@ -51,6 +55,7 @@ namespace VRTK
             }
         }
 
+        // this dictionary maps each of the buttons on the right hand to a state object
         public Dictionary<ButtonTypes, UnityXRInputState> rightHandCurrentFrameButtonStates = new Dictionary<ButtonTypes, UnityXRInputState>()
         {
             { ButtonTypes.ButtonOne, new UnityXRInputState() },
@@ -64,6 +69,7 @@ namespace VRTK
             { ButtonTypes.Trigger, new UnityXRInputState() }
         };
 
+        // this dictionary maps each of the buttons on the right hand to a state object
         public Dictionary<ButtonTypes, UnityXRInputState> leftHandCurrentFrameButtonStates = new Dictionary<ButtonTypes, UnityXRInputState>()
         {
             { ButtonTypes.ButtonOne, new UnityXRInputState() },
@@ -77,6 +83,8 @@ namespace VRTK
             { ButtonTypes.Trigger, new UnityXRInputState() }
         };
 
+        // This value controls the sensitivity of the trigger; due to a bug in the Unity code, touching a trigger causes the button to register as pressed
+        // so instead we are using a hairline trigger value to determine if it is pressed or not.
         protected float triggerActivationThreshold = 1.0f;
 
 #elif !UNITY_2019_1_OR_NEWER
@@ -188,11 +196,10 @@ namespace VRTK
 #endif
 
 #if UNITY_2019_1_OR_NEWER
+        // Unity XR Input handles
         protected InputDevice leftControllerXRDevice;
         protected InputDevice rightControllerXRDevice;
 #endif
-
-        
 
         private bool settingCaches = false;
 
@@ -274,6 +281,7 @@ namespace VRTK
                     case ButtonTypes.Trigger:
                         // no reliable way for getting this value
                         currentFrameTouchValue = false;
+                        // Unity XR has a bug where CommonUsages.triggerButton will activate when touched on Oculus, so instead we are using the hairline value here
                         currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.trigger, out floatValueOut) && (floatValueOut >= triggerActivationThreshold));
                         break;
 
@@ -654,13 +662,8 @@ namespace VRTK
 #else
             InputDevice currentController = isRightController ? rightControllerXRDevice : leftControllerXRDevice;
             Vector2 vectorValue = Vector2.zero;
-            // TODO
             switch (buttonType)
             {
-                case ButtonTypes.Trigger:
-                    break;
-                case ButtonTypes.Grip:
-                    break;
                 case ButtonTypes.Touchpad:
                     if(currentController.TryGetFeatureValue(CommonUsages.primary2DAxis, out vectorValue))
                     {
@@ -742,19 +745,13 @@ namespace VRTK
             }
             return false;
 #else
-
             bool buttonValueOut = false;
-
             Dictionary<ButtonTypes, UnityXRInputState> currentHandState = isRightController? rightHandCurrentFrameButtonStates : leftHandCurrentFrameButtonStates;
-
             if(currentHandState.ContainsKey(buttonType) && currentHandState[buttonType].buttonState.ContainsKey(pressType))
             {
                 buttonValueOut = currentHandState[buttonType].buttonState[pressType];
             }
-
-           
             return buttonValueOut;
-            
 #endif
         }
 

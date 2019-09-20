@@ -38,7 +38,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         #region Haptic Device Behavior
         protected override void CancelHaptics()
         {
-#if UNITY_2019_OR_NEWER
+#if UNITY_2019_1_OR_NEWER
             if(hapticDevice.isValid)
 #elif UNITY_2018_3_OR_NEWER
             if(hapticDevice.IsValid)
@@ -54,7 +54,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
 
         protected override void StartHaptics(HumanBodyBones bodyPart, BodyCoordinateHit hitLocation, float intensity)
         {
-#if UNITY_2019_OR_NEWER
+#if UNITY_2019_1_OR_NEWER
             if(hapticDevice.isValid)
 #elif UNITY_2018_3_OR_NEWER
             if (hapticDevice.IsValid)
