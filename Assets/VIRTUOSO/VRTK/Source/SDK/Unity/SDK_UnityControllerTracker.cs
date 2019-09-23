@@ -26,14 +26,15 @@ namespace VRTK
         [Tooltip("The unique index to assign to the controller.")]
         public uint index;
 #if !UNITY_2019_1_OR_NEWER
+        // note: the following defaults are for the left hand, replace Left with Right if creating a new right hand
         [Tooltip("The Unity Input name for the trigger axis.")]
-        public string triggerAxisName = "";
+        public string triggerAxisName = "LeftTrigger";
         [Tooltip("The Unity Input name for the grip axis.")]
-        public string gripAxisName = "";
+        public string gripAxisName = "LeftGrip";
         [Tooltip("The Unity Input name for the touchpad horizontal axis.")]
-        public string touchpadHorizontalAxisName = "";
+        public string touchpadHorizontalAxisName = "LeftTrackpadHorizontal";
         [Tooltip("The Unity Input name for the touchpad vertical axis.")]
-        public string touchpadVerticalAxisName = "";
+        public string touchpadVerticalAxisName = "LeftTrackpadVertical";
 
         protected virtual void OnEnable()
         {
