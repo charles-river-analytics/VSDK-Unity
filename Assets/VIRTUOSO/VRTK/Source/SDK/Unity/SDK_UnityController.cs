@@ -241,24 +241,24 @@ namespace VRTK
 
                 bool currentFrameTouchValue = false;
                 bool currentFramePressValue = false;
-                bool buttonValueOut;
-                float floatValueOut = 0.0f;
+                bool buttonPressOut;
+                float buttonPressAmountOut = 0.0f;
 
                 switch (buttonType)
                 {
                     case ButtonTypes.ButtonOne:
-                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.primaryTouch, out buttonValueOut) && buttonValueOut);
-                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonValueOut) && buttonValueOut);
-                        bool buttonSuccess = currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonValueOut);
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.primaryTouch, out buttonPressOut) && buttonPressOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonPressOut) && buttonPressOut);
+                        bool buttonSuccess = currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonPressOut);
                         break;
                     case ButtonTypes.ButtonTwo:
-                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.secondaryTouch, out buttonValueOut) && buttonValueOut);
-                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.secondaryButton, out buttonValueOut) && buttonValueOut);
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.secondaryTouch, out buttonPressOut) && buttonPressOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.secondaryButton, out buttonPressOut) && buttonPressOut);
                         break;
                     case ButtonTypes.Grip:
                         // no reliable method for getting this value
                         currentFrameTouchValue = false;
-                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.gripButton, out buttonValueOut) && buttonValueOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.gripButton, out buttonPressOut) && buttonPressOut);
                         break;
                     case ButtonTypes.MiddleFinger:
                         // not currently supported through Unity XR
@@ -270,19 +270,19 @@ namespace VRTK
                         // not currently supported through Unity XR
                         break;
                     case ButtonTypes.Touchpad:
-                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out buttonValueOut) && buttonValueOut);
-                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out buttonValueOut) && buttonValueOut);
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out buttonPressOut) && buttonPressOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out buttonPressOut) && buttonPressOut);
                         break;
                     case ButtonTypes.StartMenu:
                         // menu touch not supported through Unity XR
                         currentFrameTouchValue = false;
-                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.menuButton, out buttonValueOut) && buttonValueOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.menuButton, out buttonPressOut) && buttonPressOut);
                         break;
                     case ButtonTypes.Trigger:
                         // no reliable way for getting this value
                         currentFrameTouchValue = false;
                         // Unity XR has a bug where CommonUsages.triggerButton will activate when touched on Oculus, so instead we are using the hairline value here
-                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.trigger, out floatValueOut) && (floatValueOut >= triggerActivationThreshold));
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.trigger, out buttonPressAmountOut) && (buttonPressAmountOut >= triggerActivationThreshold));
                         break;
 
                 }
@@ -315,11 +315,11 @@ namespace VRTK
         public override ControllerType GetCurrentControllerType(VRTK_ControllerReference controllerReference = null)
         {
             SetTrackedControllerCaches();
-#if !UNITY_2019_1_OR_NEWER
-            return cachedControllerType;
-#else
+#if UNITY_2019_1_OR_NEWER
             // not used post-2019
             return ControllerType.Custom;
+#else
+            return cachedControllerType;
 #endif
         }
 

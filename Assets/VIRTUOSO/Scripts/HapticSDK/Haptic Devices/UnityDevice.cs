@@ -26,7 +26,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
 #if UNITY_2018_3_OR_NEWER
         #region Protected Variables
         // Indicates which hand this object corresponds to
-        protected XRNode nodeType;
+        protected XRNode handNodeType;
         
         // Holds a reference to the Unity XR device for haptic feedback
         protected InputDevice hapticDevice;
@@ -38,27 +38,19 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         #region Haptic Device Behavior
         protected override void CancelHaptics()
         {
-#if UNITY_2019_1_OR_NEWER
-            if(hapticDevice.isValid)
-#elif UNITY_2018_3_OR_NEWER
-            if(hapticDevice.IsValid)
-#endif
+            if(IsHapticDeviceValid())
             {
                 hapticDevice.StopHaptics();
             }
             else
             {
-                Debug.LogWarningFormat("Unity XR Haptic Device {0} failed to cancel: device is invalid", nodeType.ToString());
+                Debug.LogWarningFormat("Unity XR Haptic Device {0} failed to cancel: device is invalid", handNodeType.ToString());
             }
         }
 
         protected override void StartHaptics(HumanBodyBones bodyPart, BodyCoordinateHit hitLocation, float intensity)
         {
-#if UNITY_2019_1_OR_NEWER
-            if(hapticDevice.isValid)
-#elif UNITY_2018_3_OR_NEWER
-            if (hapticDevice.IsValid)
-#endif
+            if(IsHapticDeviceValid())
             {
                 HapticCapabilities hapticCapabilities;
                 if (hapticDevice.TryGetHapticCapabilities(out hapticCapabilities) && hapticCapabilities.supportsImpulse)
@@ -72,7 +64,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
             }
             else
             {
-                Debug.LogWarningFormat("Unity XR Haptic Device for the {0} failed to play haptics: device is invalid", nodeType.ToString());
+                Debug.LogWarningFormat("Unity XR Haptic Device for the {0} failed to play haptics: device is invalid", handNodeType.ToString());
             }
         }
 
@@ -82,8 +74,8 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         public override void ApplyDefaultData(HapticSystemAttribute hapticSystemInfo)
         {
             base.ApplyDefaultData(hapticSystemInfo);
-
-            nodeType = (bool)hapticSystemInfo.AdditionalData[0] ? XRNode.RightHand : XRNode.LeftHand;
+            // the first entry in additional data is true if this is the right hand and false otherwise
+            handNodeType = (bool)hapticSystemInfo.AdditionalData[0] ? XRNode.RightHand : XRNode.LeftHand;
         }
 
         /// <summary>
@@ -93,14 +85,26 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         {
             if (e.currentSetup.controllerSDKInfo.type == hapticSystemInfo.ConnectedSDKType)
             {
-                hapticDevice = InputDevices.GetDeviceAtXRNode(nodeType);
+                hapticDevice = InputDevices.GetDeviceAtXRNode(handNodeType);
             }
+        }
+
+        /// <summary>
+        /// Checks if the current haptic device is valid in UnityXR.
+        /// </summary>
+        protected bool IsHapticDeviceValid()
+        {
+#if UNITY_2019_1_OR_NEWER
+            return hapticDevice.isValid;
+#elif UNITY_2018_3_OR_NEWER
+            return hapticDevice.IsValid;
+#endif
         }
         #endregion
 #else
         protected override void CancelHaptics()
         {
-           // no op
+           // no op - base class abstract but operation not supported in this version of Unity
         }
 
         protected override void StartHaptics(HumanBodyBones bodyPart, BodyCoordinateHit hitLocation, float intensity)
@@ -115,7 +119,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         {
             base.ApplyDefaultData(hapticSystemInfo);
 
-            // no op
+             // no op - base class abstract but operation not supported in this version of Unity
         }
 
         /// <summary>
@@ -123,7 +127,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         /// </summary>
         protected override void Instance_LoadedSetupChanged(VRTK_SDKManager sender, VRTK_SDKManager.LoadedSetupChangeEventArgs e)
         {
-            // no op
+             // no op - base class abstract but operation not supported in this version of Unity
         }
 #endif
 

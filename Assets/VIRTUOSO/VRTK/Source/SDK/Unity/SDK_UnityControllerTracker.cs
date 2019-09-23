@@ -22,7 +22,7 @@ namespace VRTK
     public class SDK_UnityControllerTracker : MonoBehaviour
     {
         [Tooltip("The Unity VRNode to track.")]
-        public XRNode nodeType;
+        public XRNode handNodeType;
         [Tooltip("The unique index to assign to the controller.")]
         public uint index;
 #if !UNITY_2019_1_OR_NEWER
@@ -63,8 +63,8 @@ namespace VRTK
 
         protected virtual void FixedUpdate()
         {
-            transform.localPosition = InputTracking.GetLocalPosition(nodeType);
-            transform.localRotation = InputTracking.GetLocalRotation(nodeType);
+            transform.localPosition = InputTracking.GetLocalPosition(handNodeType);
+            transform.localRotation = InputTracking.GetLocalRotation(handNodeType);
         }
     }
 }
