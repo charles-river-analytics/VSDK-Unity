@@ -364,7 +364,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a56f0178eefe7b9409460ae29588f961, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nodeType: 4
+  handNodeType: 4
   index: 1
   triggerAxisName: LeftTrigger
   gripAxisName: LeftGrip
@@ -381,7 +381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a56f0178eefe7b9409460ae29588f961, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nodeType: 5
+  handNodeType: 5
   index: 0
   triggerAxisName: RightTrigger
   gripAxisName: RightGrip
