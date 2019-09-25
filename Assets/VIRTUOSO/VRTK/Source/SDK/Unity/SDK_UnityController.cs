@@ -2,11 +2,19 @@
 namespace VRTK
 {
     using UnityEngine;
+#if UNITY_2019_1_OR_NEWER
+    using UnityEngine.XR;
+#endif
     using System;
     using System.Collections.Generic;
 
     /// <summary>
     /// The Unity Controller SDK script provides a bridge  to the base Unity input device support.
+    /// 
+    /// In Unity versions greater than 2019.1, this makes use of the Unity XR Input System which allows for a much cleaner implementation.
+    /// Older versions rely on Unity's standard input system, which can be more difficult to configure.
+    /// 
+    /// Last Editor: Dan Duggan (dduggan@cra.com) Updated: September 2019
     /// </summary>
     [SDK_Description(typeof(SDK_UnitySystem))]
     [SDK_Description(typeof(SDK_UnitySystem), 1)]
@@ -23,6 +31,63 @@ namespace VRTK
         protected VRTK_VelocityEstimator cachedLeftVelocityEstimator;
         protected VRTK_VelocityEstimator cachedRightVelocityEstimator;
         protected Vector2 buttonPressThreshold = new Vector2(0.2f, 0.5f);
+
+#if UNITY_2019_1_OR_NEWER
+
+        /// <summary>
+        /// This nested class is used to track the frame-by-frame button state of each button.
+        /// </summary>
+        public class UnityXRInputState
+        {
+            // state of each press type for this button
+            public Dictionary<ButtonPressTypes, bool> buttonState;
+            public UnityXRInputState()
+            {
+                buttonState = new Dictionary<ButtonPressTypes, bool>()
+                {
+                    { ButtonPressTypes.Press , false },
+                    { ButtonPressTypes.PressDown, false },
+                    { ButtonPressTypes.PressUp, false },
+                    { ButtonPressTypes.Touch, false },
+                    { ButtonPressTypes.TouchDown, false },
+                    { ButtonPressTypes.TouchUp, false }
+                };
+            }
+        }
+
+        // this dictionary maps each of the buttons on the right hand to a state object
+        public Dictionary<ButtonTypes, UnityXRInputState> rightHandCurrentFrameButtonStates = new Dictionary<ButtonTypes, UnityXRInputState>()
+        {
+            { ButtonTypes.ButtonOne, new UnityXRInputState() },
+            { ButtonTypes.ButtonTwo, new UnityXRInputState() },
+            { ButtonTypes.Grip, new UnityXRInputState() },
+            { ButtonTypes.MiddleFinger, new UnityXRInputState() },
+            { ButtonTypes.PinkyFinger, new UnityXRInputState() },
+            { ButtonTypes.RingFinger, new UnityXRInputState() },
+            { ButtonTypes.StartMenu, new UnityXRInputState() },
+            { ButtonTypes.Touchpad, new UnityXRInputState() },
+            { ButtonTypes.Trigger, new UnityXRInputState() }
+        };
+
+        // this dictionary maps each of the buttons on the right hand to a state object
+        public Dictionary<ButtonTypes, UnityXRInputState> leftHandCurrentFrameButtonStates = new Dictionary<ButtonTypes, UnityXRInputState>()
+        {
+            { ButtonTypes.ButtonOne, new UnityXRInputState() },
+            { ButtonTypes.ButtonTwo, new UnityXRInputState() },
+            { ButtonTypes.Grip, new UnityXRInputState() },
+            { ButtonTypes.MiddleFinger, new UnityXRInputState() },
+            { ButtonTypes.PinkyFinger, new UnityXRInputState() },
+            { ButtonTypes.RingFinger, new UnityXRInputState() },
+            { ButtonTypes.StartMenu, new UnityXRInputState() },
+            { ButtonTypes.Touchpad, new UnityXRInputState() },
+            { ButtonTypes.Trigger, new UnityXRInputState() }
+        };
+
+        // This value controls the sensitivity of the trigger; due to a bug in the Unity code, touching a trigger causes the button to register as pressed
+        // so instead we are using a hairline trigger value to determine if it is pressed or not.
+        protected float triggerActivationThreshold = 1.0f;
+
+#elif !UNITY_2019_1_OR_NEWER
         protected Dictionary<ButtonTypes, bool> rightAxisButtonPressState = new Dictionary<ButtonTypes, bool>()
         {
             { ButtonTypes.Trigger, false },
@@ -128,6 +193,13 @@ namespace VRTK
             { ButtonTypes.ButtonTwo, KeyCode.JoystickButton2 },
             { ButtonTypes.StartMenu, KeyCode.JoystickButton7 }
         };
+#endif
+
+#if UNITY_2019_1_OR_NEWER
+        // Unity XR Input handles
+        protected InputDevice leftControllerXRDevice;
+        protected InputDevice rightControllerXRDevice;
+#endif
 
         private bool settingCaches = false;
 
@@ -138,7 +210,92 @@ namespace VRTK
         /// <param name="options">A dictionary of generic options that can be used to within the update.</param>
         public override void ProcessUpdate(VRTK_ControllerReference controllerReference, Dictionary<string, object> options)
         {
+#if UNITY_2019_1_OR_NEWER
+            if (controllerReference.hand == ControllerHand.Left)
+            {
+                ProcessUnityXRInput(leftHandCurrentFrameButtonStates, leftControllerXRDevice);
+            }
+            else
+            {
+                ProcessUnityXRInput(rightHandCurrentFrameButtonStates, rightControllerXRDevice);
+            }
+#endif
         }
+
+#if UNITY_2019_1_OR_NEWER
+        /// <summary>
+        /// Uses Unity XR input to determine the status of each button on the controller.
+        /// </summary>
+        protected void ProcessUnityXRInput(Dictionary<ButtonTypes,UnityXRInputState> handState, InputDevice currentController)
+        {
+            if(currentController.isValid != true)
+            {
+                return;
+            }
+
+            // get current button values
+            foreach (ButtonTypes buttonType in handState.Keys)
+            {
+                bool lastFrameTouchValue = handState[buttonType].buttonState[ButtonPressTypes.Touch];
+                bool lastFramePressValue = handState[buttonType].buttonState[ButtonPressTypes.Press];
+
+                bool currentFrameTouchValue = false;
+                bool currentFramePressValue = false;
+                bool buttonPressOut;
+                float buttonPressAmountOut = 0.0f;
+
+                switch (buttonType)
+                {
+                    case ButtonTypes.ButtonOne:
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.primaryTouch, out buttonPressOut) && buttonPressOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonPressOut) && buttonPressOut);
+                        bool buttonSuccess = currentController.TryGetFeatureValue(CommonUsages.primaryButton, out buttonPressOut);
+                        break;
+                    case ButtonTypes.ButtonTwo:
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.secondaryTouch, out buttonPressOut) && buttonPressOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.secondaryButton, out buttonPressOut) && buttonPressOut);
+                        break;
+                    case ButtonTypes.Grip:
+                        // no reliable method for getting this value
+                        currentFrameTouchValue = false;
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.gripButton, out buttonPressOut) && buttonPressOut);
+                        break;
+                    case ButtonTypes.MiddleFinger:
+                        // not currently supported through Unity XR
+                        break;
+                    case ButtonTypes.PinkyFinger:
+                        // not currently supported through Unity XR
+                        break;
+                    case ButtonTypes.RingFinger:
+                        // not currently supported through Unity XR
+                        break;
+                    case ButtonTypes.Touchpad:
+                        currentFrameTouchValue = (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out buttonPressOut) && buttonPressOut);
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.primary2DAxisClick, out buttonPressOut) && buttonPressOut);
+                        break;
+                    case ButtonTypes.StartMenu:
+                        // menu touch not supported through Unity XR
+                        currentFrameTouchValue = false;
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.menuButton, out buttonPressOut) && buttonPressOut);
+                        break;
+                    case ButtonTypes.Trigger:
+                        // no reliable way for getting this value
+                        currentFrameTouchValue = false;
+                        // Unity XR has a bug where CommonUsages.triggerButton will activate when touched on Oculus, so instead we are using the hairline value here
+                        currentFramePressValue = (currentController.TryGetFeatureValue(CommonUsages.trigger, out buttonPressAmountOut) && (buttonPressAmountOut >= triggerActivationThreshold));
+                        break;
+
+                }
+
+                handState[buttonType].buttonState[ButtonPressTypes.Press] = currentFramePressValue;
+                handState[buttonType].buttonState[ButtonPressTypes.PressDown] = currentFramePressValue && (!lastFramePressValue);
+                handState[buttonType].buttonState[ButtonPressTypes.PressUp] = (!currentFramePressValue) && lastFramePressValue;
+                handState[buttonType].buttonState[ButtonPressTypes.Touch] = currentFrameTouchValue;
+                handState[buttonType].buttonState[ButtonPressTypes.TouchDown] = currentFrameTouchValue && (!lastFrameTouchValue);
+                handState[buttonType].buttonState[ButtonPressTypes.TouchUp] = (!currentFrameTouchValue) && lastFrameTouchValue;
+            }
+        }
+#endif
 
         /// <summary>
         /// The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
@@ -147,6 +304,7 @@ namespace VRTK
         /// <param name="options">A dictionary of generic options that can be used to within the fixed update.</param>
         public override void ProcessFixedUpdate(VRTK_ControllerReference controllerReference, Dictionary<string, object> options)
         {
+            // no op
         }
 
         /// <summary>
@@ -157,7 +315,12 @@ namespace VRTK
         public override ControllerType GetCurrentControllerType(VRTK_ControllerReference controllerReference = null)
         {
             SetTrackedControllerCaches();
+#if UNITY_2019_1_OR_NEWER
+            // not used post-2019
+            return ControllerType.Custom;
+#else
             return cachedControllerType;
+#endif
         }
 
         /// <summary>
@@ -486,7 +649,7 @@ namespace VRTK
             {
                 return Vector2.zero;
             }
-
+#if !UNITY_2019_1_OR_NEWER
             switch (buttonType)
             {
                 case ButtonTypes.Trigger:
@@ -496,6 +659,19 @@ namespace VRTK
                 case ButtonTypes.Touchpad:
                     return new Vector2(GetAxisValue((isRightController ? cachedRightTracker.touchpadHorizontalAxisName : cachedLeftTracker.touchpadHorizontalAxisName)), GetAxisValue((isRightController ? cachedRightTracker.touchpadVerticalAxisName : cachedLeftTracker.touchpadVerticalAxisName)));
             }
+#else
+            InputDevice currentController = isRightController ? rightControllerXRDevice : leftControllerXRDevice;
+            Vector2 vectorValue = Vector2.zero;
+            switch (buttonType)
+            {
+                case ButtonTypes.Touchpad:
+                    if(currentController.TryGetFeatureValue(CommonUsages.primary2DAxis, out vectorValue))
+                    {
+                        return vectorValue;
+                    }
+                    break;
+            }
+#endif
             return Vector2.zero;
         }
 
@@ -537,6 +713,7 @@ namespace VRTK
 
             bool isRightController = (controllerReference.hand == ControllerHand.Right);
 
+#if !UNITY_2019_1_OR_NEWER
             KeyCode? touchButton = VRTK_SharedMethods.GetDictionaryValue((isRightController ? rightControllerTouchKeyCodes : leftControllerTouchKeyCodes), buttonType);
             KeyCode? pressButton = VRTK_SharedMethods.GetDictionaryValue((isRightController ? rightControllerPressKeyCodes : leftControllerPressKeyCodes), buttonType);
 
@@ -567,6 +744,15 @@ namespace VRTK
                     return IsButtonPressed(pressType, touchButton, pressButton);
             }
             return false;
+#else
+            bool buttonValueOut = false;
+            Dictionary<ButtonTypes, UnityXRInputState> currentHandState = isRightController? rightHandCurrentFrameButtonStates : leftHandCurrentFrameButtonStates;
+            if(currentHandState.ContainsKey(buttonType) && currentHandState[buttonType].buttonState.ContainsKey(pressType))
+            {
+                buttonValueOut = currentHandState[buttonType].buttonState[pressType];
+            }
+            return buttonValueOut;
+#endif
         }
 
         protected virtual bool IsMouseAliasPress(bool validController, ButtonTypes buttonType, ButtonPressTypes pressType)
@@ -630,10 +816,34 @@ namespace VRTK
         }
 
         protected virtual bool IsAxisButtonPress(VRTK_ControllerReference controllerReference, ButtonTypes buttonType, ButtonPressTypes pressType)
-        {
+        {   
             bool isRightController = (controllerReference.hand == ControllerHand.Right);
+#if UNITY_2019_1_OR_NEWER
+            // not used in 2019 or newer
+            return false;
+#else
             Vector2 axisValue = GetButtonAxis(buttonType, controllerReference);
             return IsAxisOnHandButtonPress((isRightController ? rightAxisButtonPressState : leftAxisButtonPressState), buttonType, pressType, axisValue);
+#endif
+        }
+
+        protected bool GetButtonPressState(Dictionary<ButtonTypes, bool> previousState, ButtonTypes buttonType, ButtonPressTypes pressType, bool currentValue)
+        {
+            switch (pressType) {
+                case ButtonPressTypes.PressDown:
+                    {
+                        if (previousState[buttonType] == false && currentValue == true)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+        }
+
+            return false;
         }
 
         protected virtual bool GetAxisPressState(bool currentState, float axisValue)
@@ -648,7 +858,7 @@ namespace VRTK
             }
             return currentState;
         }
-
+#if !UNITY_2019_1_OR_NEWER
         protected virtual bool IsButtonPressed(ButtonPressTypes pressType, KeyCode? touchKey, KeyCode? pressKey)
         {
             switch (pressType)
@@ -668,6 +878,7 @@ namespace VRTK
             }
             return false;
         }
+#endif
 
         protected virtual void SetTrackedControllerCaches(bool forceRefresh = false)
         {
@@ -696,6 +907,14 @@ namespace VRTK
                         cachedLeftTracker = cachedLeftController.GetComponent<SDK_UnityControllerTracker>();
                         cachedLeftVelocityEstimator = cachedLeftController.GetComponent<VRTK_VelocityEstimator>();
                         SetControllerButtons(ControllerHand.Left);
+#if UNITY_2019_1_OR_NEWER
+                        List<InputDevice> leftHandDevices = new List<InputDevice>();
+                        InputDevices.GetDevicesAtXRNode(XRNode.LeftHand, leftHandDevices);
+                        if(leftHandDevices.Count > 0)
+                        {
+                            this.leftControllerXRDevice = leftHandDevices[0];
+                        }
+#endif
                     }
                 }
                 if (cachedRightController == null && sdkManager.loadedSetup.actualRightController != null)
@@ -707,6 +926,14 @@ namespace VRTK
                         cachedRightTracker = cachedRightController.GetComponent<SDK_UnityControllerTracker>();
                         cachedRightVelocityEstimator = cachedRightController.GetComponent<VRTK_VelocityEstimator>();
                         SetControllerButtons(ControllerHand.Right);
+#if UNITY_2019_1_OR_NEWER
+                        List<InputDevice> rightHandDevices = new List<InputDevice>();
+                        InputDevices.GetDevicesAtXRNode(XRNode.RightHand, rightHandDevices);
+                        if (rightHandDevices.Count > 0)
+                        {
+                            this.rightControllerXRDevice = rightHandDevices[0];
+                        }
+#endif
                     }
                 }
             }
@@ -716,6 +943,7 @@ namespace VRTK
 
         protected virtual void SetControllerButtons(ControllerHand hand)
         {
+#if !UNITY_2019_1_OR_NEWER
             List<string> checkhands = (hand == ControllerHand.Right ? validRightHands : validLeftHands);
 
             bool joystickFound = false;
@@ -760,10 +988,12 @@ namespace VRTK
             {
                 VRTK_Logger.Warn("Failed setting controller buttons on [" + hand + "] due to no valid joystick type found in `GetJoyStickNames` -> " + string.Join(", ", availableJoysticks));
             }
+#endif
         }
 
         protected virtual void SetCachedControllerType(string givenType)
         {
+#if !UNITY_2019_1_OR_NEWER
             givenType = givenType.ToLower();
             //try direct matching
             switch (givenType)
@@ -793,10 +1023,12 @@ namespace VRTK
             {
                 cachedControllerType = ControllerType.Oculus_OculusTouch;
             }
+#endif
         }
 
         protected virtual void SetControllerButtonValues(ref Dictionary<ButtonTypes, KeyCode?> touchKeyCodes, ref Dictionary<ButtonTypes, KeyCode?> pressKeyCodes, int joystickIndex, int[] touchCodes, int[] pressCodes)
         {
+#if !UNITY_2019_1_OR_NEWER
             VRTK_SharedMethods.AddDictionaryValue(touchKeyCodes, ButtonTypes.Trigger, StringToKeyCode(joystickIndex, touchCodes[0]), true);
             VRTK_SharedMethods.AddDictionaryValue(touchKeyCodes, ButtonTypes.Touchpad, StringToKeyCode(joystickIndex, touchCodes[1]), true);
             VRTK_SharedMethods.AddDictionaryValue(touchKeyCodes, ButtonTypes.ButtonOne, StringToKeyCode(joystickIndex, touchCodes[2]), true);
@@ -806,6 +1038,7 @@ namespace VRTK
             VRTK_SharedMethods.AddDictionaryValue(pressKeyCodes, ButtonTypes.ButtonOne, StringToKeyCode(joystickIndex, pressCodes[1]), true);
             VRTK_SharedMethods.AddDictionaryValue(pressKeyCodes, ButtonTypes.ButtonTwo, StringToKeyCode(joystickIndex, pressCodes[2]), true);
             VRTK_SharedMethods.AddDictionaryValue(pressKeyCodes, ButtonTypes.StartMenu, StringToKeyCode(joystickIndex, pressCodes[3]), true);
+#endif
         }
 
         protected virtual KeyCode StringToKeyCode(int index, int code)
