@@ -19,7 +19,7 @@ namespace VRTK
 #endif
     {
 #if VRTK_DEFINE_SDK_STEAMVR
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
         protected VRTK_VelocityEstimator cachedHeadsetVelocityEstimator;
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace VRTK
             cachedHeadset = GetSDKManagerHeadset();
             if (cachedHeadset == null)
             {
-#if (UNITY_5_4_OR_NEWER) && (!VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER)
+#if (UNITY_5_4_OR_NEWER) && (!VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0)
                 SteamVR_Camera foundCamera = VRTK_SharedMethods.FindEvenInactiveComponent<SteamVR_Camera>(true);
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#elif VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
                 SteamVR_PlayArea playAreaRoot = VRTK_SharedMethods.FindEvenInactiveComponent<SteamVR_PlayArea>(true);
                 Camera foundCamera = null;
                 if (playAreaRoot != null)
@@ -89,7 +89,7 @@ namespace VRTK
             cachedHeadsetCamera = GetSDKManagerHeadset();
             if (cachedHeadsetCamera == null)
             {
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
                 // no longer uses a special camera type
                 SteamVR_PlayArea playAreaRoot = VRTK_SharedMethods.FindEvenInactiveComponent<SteamVR_PlayArea>(true);
                 Camera foundCamera = null;
@@ -151,7 +151,7 @@ namespace VRTK
         /// <returns>A Vector3 containing the current velocity of the headset.</returns>
         public override Vector3 GetHeadsetVelocity()
         {
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
             SetHeadsetCaches();
             return cachedHeadsetVelocityEstimator.GetVelocityEstimate();
 #else
@@ -166,7 +166,7 @@ namespace VRTK
         /// <returns>A Vector3 containing the current angular velocity of the headset.</returns>
         public override Vector3 GetHeadsetAngularVelocity()
         {
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
             SetHeadsetCaches();
             return cachedHeadsetVelocityEstimator.GetAngularVelocityEstimate();
 #else

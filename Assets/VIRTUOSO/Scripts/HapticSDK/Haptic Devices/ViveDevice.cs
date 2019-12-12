@@ -13,14 +13,14 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
     /// 
     /// Written by: Nicolas Herrera (nherrera@cra.com), 2019
     /// </summary>
-#if VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER || VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3 || VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
     [HapticSystem("Vive", "Left Controller", "BodyCoordinates/LeftHand", typeof(SDK_SteamVRController), false)]
     [HapticSystem("Vive", "Right Controller", "BodyCoordinates/RightHand", typeof(SDK_SteamVRController), true)]
 #endif
     public class ViveDevice : HapticDevice
     {
         #region PublicVariables
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
         public SteamVR_Action_Vibration vibration;
 #endif
         [Range(0, 320)]
@@ -31,9 +31,9 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         #region PrivateVariables
         [SerializeField]
         private bool isRightController;
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
         private SteamVR_Behaviour_Pose trackedObject;
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER && ! VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3
         // The max timing of a haptic pulse in microseconds for the controller, this also determines the max intensity
         private const float VIVE_VIBRATION_VALUE = 3999;
         private SteamVR_TrackedObject trackedObject;
@@ -43,9 +43,9 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         #region HapticDeviceOverride
         protected override void StartHaptics(HumanBodyBones bodyPart, BodyCoordinateHit hitLocation, float intensity)
         {
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER && VRTK_DEFINE_STEAMVR_INPUT_COMPILED
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0 && VRTK_DEFINE_STEAMVR_INPUT_COMPILED
             vibration.Execute(0.0f, hapticDuration / Constants.MS_TO_SECONDS, frequency, intensity, trackedObject.inputSource);
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER
+#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3
             SteamVR_Controller.Input((int)trackedObject.index).TriggerHapticPulse((ushort)(intensity * VIVE_VIBRATION_VALUE));
 #endif
         }
@@ -80,10 +80,10 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
 
                 if (controllerGameObject != null)
                 {
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER && VRTK_DEFINE_STEAMVR_INPUT_COMPILED
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0 && VRTK_DEFINE_STEAMVR_INPUT_COMPILED
                     trackedObject = controllerGameObject.GetComponent<SteamVR_Behaviour_Pose>();
                     vibration = SteamVR_Actions.naturalistic_Haptic;
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER
+#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3
                     trackedObject = controllerGameObject.GetComponent<SteamVR_TrackedObject>();
 #endif
                 }

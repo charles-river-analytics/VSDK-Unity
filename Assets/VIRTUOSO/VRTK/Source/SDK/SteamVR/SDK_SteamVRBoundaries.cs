@@ -24,7 +24,7 @@ namespace VRTK
         /// </summary>
         public override void InitBoundaries()
         {
-#if UNITY_5_6 && !VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER
+#if UNITY_5_6 && ! VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3 && ! VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
             Transform headsetCamera = VRTK_DeviceFinder.HeadsetCamera();
             if (headsetCamera != null && headsetCamera.GetComponent<SteamVR_UpdatePoses>() == null)
             {
@@ -135,24 +135,7 @@ namespace VRTK
 
         protected virtual Vector3[] ProcessVertices(Vector3[] vertices)
         {
-#if VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER
             return vertices;
-#else
-            //If there aren't enough vertices or the play area is calibrated then just return
-            if (vertices.Length < 8 || IsPlayAreaSizeCalibrated())
-            {
-                return vertices;
-            }
-
-            //Go through the existing vertices and swap them around so they're in the correct expected location
-            Vector3[] modifiedVertices = new Vector3[8];
-            int[] verticeIndexes = new int[] { 3, 0, 1, 2, 7, 4, 5, 6 };
-            for (int i = 0; i < modifiedVertices.Length; i++)
-            {
-                modifiedVertices[i] = vertices[verticeIndexes[i]];
-            }
-            return modifiedVertices;
-#endif
         }
 #endif
     }

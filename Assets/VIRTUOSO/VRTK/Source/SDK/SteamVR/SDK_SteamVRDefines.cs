@@ -17,7 +17,7 @@ namespace VRTK
         private const string BuildTargetGroupName = "Standalone";
 
         [SDK_ScriptingDefineSymbolPredicate(ScriptingDefineSymbol, BuildTargetGroupName)]
-        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_2_0_0_OR_NEWER", BuildTargetGroupName)]
+        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_2_0_0", BuildTargetGroupName)]
         private static bool IsPluginVersion200OrNewer()
         {
             // 2.0 version adds namespaces to SteamVR
@@ -31,14 +31,12 @@ namespace VRTK
         {
             // determines if the developer has built the SteamVR inputs. Otherwise, because of how Unity compiles things it will be unable to build the inputs because it can't build the whole project
             Type steamVRInputClass = VRTK_SharedMethods.GetTypeUnknownAssembly("Valve.VR.SteamVR_Input_ActionSet_naturalistic");
-            
-
             return steamVRInputClass != null;
         }
 
         [SDK_ScriptingDefineSymbolPredicate(ScriptingDefineSymbol, BuildTargetGroupName)]
-        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_1_2_2_OR_NEWER", BuildTargetGroupName)]
-        private static bool IsPluginVersion122OrNewer()
+        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_1_2_3", BuildTargetGroupName)]
+        private static bool IsPluginVersion123OrNewer()
         {
             Type controllerManagerClass = VRTK_SharedMethods.GetTypeUnknownAssembly("SteamVR_ControllerManager");
             if (controllerManagerClass == null)
@@ -46,76 +44,15 @@ namespace VRTK
                 return false;
             }
 
-            return controllerManagerClass.GetMethod("SetUniqueObject", BindingFlags.NonPublic | BindingFlags.Instance) != null;
+            bool version123Identified = controllerManagerClass.GetMethod("SetUniqueObject", BindingFlags.NonPublic | BindingFlags.Instance) != null;
+            return version123Identified && !IsPluginVersion200OrNewer();
         }
 
         [SDK_ScriptingDefineSymbolPredicate(ScriptingDefineSymbol, BuildTargetGroupName)]
-        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_1_2_1_OR_NEWER", BuildTargetGroupName)]
-        private static bool IsPluginVersion121OrNewer()
+        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_VERSION_UNSUPPORTED", BuildTargetGroupName)]
+        private static bool IsPluginVersionUnsupported()
         {
-            Type eventClass = VRTK_SharedMethods.GetTypeUnknownAssembly("SteamVR_Events");
-            if (eventClass == null)
-            {
-                return false;
-            }
-
-            MethodInfo systemMethod = eventClass.GetMethod("System", BindingFlags.Public | BindingFlags.Static);
-            if (systemMethod == null)
-            {
-                return false;
-            }
-
-            ParameterInfo[] systemMethodParameters = systemMethod.GetParameters();
-            if (systemMethodParameters.Length != 1)
-            {
-                return false;
-            }
-
-            return systemMethodParameters[0].ParameterType == VRTK_SharedMethods.GetTypeUnknownAssembly("Valve.VR.EVREventType");
-        }
-
-        [SDK_ScriptingDefineSymbolPredicate(ScriptingDefineSymbol, BuildTargetGroupName)]
-        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_1_2_0", BuildTargetGroupName)]
-        private static bool IsPluginVersion120()
-        {
-            Type eventClass = VRTK_SharedMethods.GetTypeUnknownAssembly("SteamVR_Events");
-            if (eventClass == null)
-            {
-                return false;
-            }
-
-            MethodInfo systemMethod = eventClass.GetMethod("System", BindingFlags.Public | BindingFlags.Static);
-            if (systemMethod == null)
-            {
-                return false;
-            }
-
-            ParameterInfo[] systemMethodParameters = systemMethod.GetParameters();
-            if (systemMethodParameters.Length != 1)
-            {
-                return false;
-            }
-
-            return systemMethodParameters[0].ParameterType == typeof(string);
-        }
-
-        [SDK_ScriptingDefineSymbolPredicate(ScriptingDefineSymbol, BuildTargetGroupName)]
-        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_1_1_1_OR_OLDER", BuildTargetGroupName)]
-        private static bool IsPluginVersion111OrOlder()
-        {
-            Type utilsClass = VRTK_SharedMethods.GetTypeUnknownAssembly("SteamVR_Utils");
-            if (utilsClass == null)
-            {
-                return false;
-            }
-
-            Type eventClass = VRTK_SharedMethods.GetNestedType(utilsClass, "Event");
-            if (eventClass == null)
-            {
-                return false;
-            }
-
-            return eventClass.GetMethod("Listen", BindingFlags.Public | BindingFlags.Static) != null;
+            return (!(IsPluginVersion123OrNewer() || IsPluginVersion200OrNewer()));
         }
     }
 }

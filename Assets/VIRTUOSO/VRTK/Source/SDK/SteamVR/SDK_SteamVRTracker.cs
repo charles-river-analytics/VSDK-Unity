@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using UnityEngine;
     using Valve.VR;
-#if !VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3
     using System;
     using System.Reflection;
 #endif
@@ -30,7 +30,7 @@
         protected Dictionary<GameObject, SteamVR_TrackedObject> cachedTrackedObjectsByGameObject = new Dictionary<GameObject, SteamVR_TrackedObject>();
         protected Dictionary<uint, SteamVR_TrackedObject> cachedTrackedObjectsByIndex = new Dictionary<uint, SteamVR_TrackedObject>();
 
-#if !VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER && !VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3
         /// <summary>
         /// This method is called just after unloading the <see cref="VRTK_SDKSetup"/> that's using this SDK.
         /// </summary>
@@ -134,7 +134,7 @@
             {
                 return Vector3.zero;
             }
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
             SteamVR_TrackedObject device = GetTrackedObjectByIndex((int)index);
             VRTK_VelocityEstimator estimatedVelocity = device.GetComponent<VRTK_VelocityEstimator>();
 
@@ -159,7 +159,7 @@
             {
                 return Vector3.zero;
             }
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
             SteamVR_TrackedObject device = GetTrackedObjectByIndex((int)index);
             VRTK_VelocityEstimator estimatedVelocity = device.GetComponent<VRTK_VelocityEstimator>();
 
@@ -173,11 +173,7 @@
 
         protected virtual void Awake()
         {
-#if VRTK_DEFINE_STEAMVR_PLUGIN_1_1_1_OR_OLDER
-            SteamVR_Utils.Event.Listen("TrackedDeviceRoleChanged", OnTrackedDeviceRoleChanged);
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_0
-            SteamVR_Events.System("TrackedDeviceRoleChanged").Listen(OnTrackedDeviceRoleChanged);
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER
+#if VRTK_DEFINE_SDK_STEAMVR
             SteamVR_Events.System(EVREventType.VREvent_TrackedDeviceRoleChanged).Listen(OnTrackedDeviceRoleChanged);
 #endif
             SetTrackedControllerCaches(true);
@@ -269,7 +265,7 @@
         }
 
         #region HelperMethods
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
         protected SteamVR_TrackedObject GetTrackedObjectByIndex(int index)
         {
             SteamVR_TrackedObject[] allTrackedObjects = FindObjectsOfType<SteamVR_TrackedObject>();
