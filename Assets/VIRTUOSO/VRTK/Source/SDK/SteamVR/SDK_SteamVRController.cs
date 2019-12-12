@@ -7,7 +7,7 @@ namespace VRTK
     using System.Text;
     using Valve.VR;
     using System;
-#if VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3
+#if ! VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3 && ! VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
     using System;
     using System.Reflection;
 #endif
@@ -55,7 +55,6 @@ namespace VRTK
 #if VRTK_DEFINE_STEAMVR_INPUT_COMPILED
             if (!SteamVR_Actions.naturalistic.IsActive())
             {
-                Debug.Log("Activating the naturalistic input set...");
                 SteamVR_Actions.naturalistic.Activate();
             }
             buttonPressToSteamVRMapping.Add(ButtonTypes.ButtonOne, SteamVR_Actions.naturalistic_x );
@@ -73,7 +72,7 @@ namespace VRTK
         }
 #endif
 
-#if !VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER && !VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
+#if !VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3 && !VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
         /// <summary>
         /// This method is called just after unloading the VRTK_SDKSetup that's using this SDK.
         /// </summary>
