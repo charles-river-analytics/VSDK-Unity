@@ -17,7 +17,7 @@ namespace VRTK
         private const string BuildTargetGroupName = "Standalone";
 
         [SDK_ScriptingDefineSymbolPredicate(ScriptingDefineSymbol, BuildTargetGroupName)]
-        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_2_0_0", BuildTargetGroupName)]
+        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_2_0_0_OR_NEWER", BuildTargetGroupName)]
         private static bool IsPluginVersion200OrNewer()
         {
             // 2.0 version adds namespaces to SteamVR
@@ -35,7 +35,7 @@ namespace VRTK
         }
 
         [SDK_ScriptingDefineSymbolPredicate(ScriptingDefineSymbol, BuildTargetGroupName)]
-        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_1_2_3", BuildTargetGroupName)]
+        [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_LEGACY", BuildTargetGroupName)]
         private static bool IsPluginVersion123OrNewer()
         {
             Type controllerManagerClass = VRTK_SharedMethods.GetTypeUnknownAssembly("SteamVR_ControllerManager");

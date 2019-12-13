@@ -417,7 +417,7 @@ namespace VRTK
                     if (!(tracker.Equals(actualHeadset) 
                         || tracker.Equals(actualLeftController) 
                         || tracker.Equals(actualRightController)
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
                         || tracker.GetComponent<Valve.VR.SteamVR_TrackedObject>().index == Valve.VR.SteamVR_TrackedObject.EIndex.Hmd
 #elif VRTK_DEFINE_SDK_STEAMVR
                         || tracker.GetComponent<SteamVR_TrackedObject>().index == SteamVR_TrackedObject.EIndex.Hmd

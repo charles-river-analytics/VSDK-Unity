@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using UnityEngine;
     using Valve.VR;
-#if ! VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3
+#if ! VRTK_DEFINE_STEAMVR_PLUGIN_LEGACY
     using System;
     using System.Reflection;
 #endif
@@ -30,7 +30,7 @@
         protected Dictionary<GameObject, SteamVR_TrackedObject> cachedTrackedObjectsByGameObject = new Dictionary<GameObject, SteamVR_TrackedObject>();
         protected Dictionary<uint, SteamVR_TrackedObject> cachedTrackedObjectsByIndex = new Dictionary<uint, SteamVR_TrackedObject>();
 
-#if ! VRTK_DEFINE_STEAMVR_PLUGIN_1_2_3 && ! VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
+#if ! VRTK_DEFINE_STEAMVR_PLUGIN_LEGACY && ! VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
         /// <summary>
         /// This method is called just after unloading the <see cref="VRTK_SDKSetup"/> that's using this SDK.
         /// </summary>
@@ -134,7 +134,7 @@
             {
                 return Vector3.zero;
             }
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
             SteamVR_TrackedObject device = GetTrackedObjectByIndex((int)index);
             VRTK_VelocityEstimator estimatedVelocity = device.GetComponent<VRTK_VelocityEstimator>();
 
@@ -159,7 +159,7 @@
             {
                 return Vector3.zero;
             }
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
             SteamVR_TrackedObject device = GetTrackedObjectByIndex((int)index);
             VRTK_VelocityEstimator estimatedVelocity = device.GetComponent<VRTK_VelocityEstimator>();
 
@@ -265,7 +265,7 @@
         }
 
         #region HelperMethods
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
         protected SteamVR_TrackedObject GetTrackedObjectByIndex(int index)
         {
             SteamVR_TrackedObject[] allTrackedObjects = FindObjectsOfType<SteamVR_TrackedObject>();
