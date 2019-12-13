@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using VRTK;
 using CharlesRiverAnalytics.Virtuoso.Utilities;
-#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0
 using Valve.VR;
 #endif
 
