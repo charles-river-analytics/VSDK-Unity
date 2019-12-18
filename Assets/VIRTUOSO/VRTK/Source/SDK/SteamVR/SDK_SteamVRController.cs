@@ -7,7 +7,7 @@ namespace VRTK
     using System.Text;
     using Valve.VR;
     using System;
-#if !VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER
+#if ! VRTK_DEFINE_STEAMVR_PLUGIN_LEGACY && ! VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
     using System;
     using System.Reflection;
 #endif
@@ -55,7 +55,6 @@ namespace VRTK
 #if VRTK_DEFINE_STEAMVR_INPUT_COMPILED
             if (!SteamVR_Actions.naturalistic.IsActive())
             {
-                Debug.Log("Activating the naturalistic input set...");
                 SteamVR_Actions.naturalistic.Activate();
             }
             buttonPressToSteamVRMapping.Add(ButtonTypes.ButtonOne, SteamVR_Actions.naturalistic_x );
@@ -73,7 +72,7 @@ namespace VRTK
         }
 #endif
 
-#if !VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER && !VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if !VRTK_DEFINE_STEAMVR_PLUGIN_LEGACY && !VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
         /// <summary>
         /// This method is called just after unloading the VRTK_SDKSetup that's using this SDK.
         /// </summary>
@@ -502,7 +501,7 @@ namespace VRTK
 #if VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER && VRTK_DEFINE_STEAMVR_INPUT_COMPILED
                 SteamVR_Input_Sources controllerInputSource = controllerReference.actual.GetComponent<SteamVR_Behaviour_Pose>().inputSource;
                 SteamVR_Actions.naturalistic_Haptic.Execute(0.0f, 1.0f, 30.0f, convertedStrength, controllerInputSource);
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER
+#elif VRTK_DEFINE_STEAMVR_PLUGIN_LEGACY
                 SteamVR_Controller.Device device = SteamVR_Controller.Input((int)index);
                 device.TriggerHapticPulse((ushort)convertedStrength, EVRButtonId.k_EButton_Axis0);
 #endif
@@ -621,7 +620,7 @@ namespace VRTK
                 default:
                     return new Vector2((GetControllerButtonState(buttonType, ButtonPressTypes.Press, controllerReference) ? 1f : 0f), 0f);
             }
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER
+#elif VRTK_DEFINE_STEAMVR_PLUGIN_LEGACY
             SteamVR_Controller.Device device = SteamVR_Controller.Input((int)index);
             switch (buttonType)
             {
@@ -795,13 +794,8 @@ namespace VRTK
             defaultSDKLeftControllerModel = (GetControllerLeftHand(true) != null ? GetControllerLeftHand(true).transform.Find("Model") : null);
             defaultSDKRightControllerModel = (GetControllerRightHand(true) != null ? GetControllerRightHand(true).transform.Find("Model") : null);
 
-#if VRTK_DEFINE_STEAMVR_PLUGIN_1_1_1_OR_OLDER
-            SteamVR_Utils.Event.Listen("TrackedDeviceRoleChanged", OnTrackedDeviceRoleChanged);
-            SteamVR_Utils.Event.Listen("render_model_loaded", OnRenderModelLoaded);
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_0
-            SteamVR_Events.System("TrackedDeviceRoleChanged").Listen(OnTrackedDeviceRoleChanged);
-            SteamVR_Events.RenderModelLoaded.Listen(OnRenderModelLoaded);
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER
+
+#if VRTK_DEFINE_SDK_STEAMVR
             SteamVR_Events.System(EVREventType.VREvent_TrackedDeviceRoleChanged).Listen(OnTrackedDeviceRoleChanged);
             SteamVR_Events.RenderModelLoaded.Listen(OnRenderModelLoaded);
 #endif
@@ -1117,5 +1111,5 @@ namespace VRTK
             return (SteamVR.instance != null ? SteamVR.instance.GetStringProperty(ETrackedDeviceProperty.Prop_ModelNumber_String, index) : "").ToLower();
         }
 #endif
-            }
+    }
 }
