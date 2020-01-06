@@ -127,6 +127,9 @@ namespace CharlesRiverAnalytics.Virtuoso
 
                         reactionsPerEventDictionary.Add(eventNameArray[n], currentInfo);
                     }
+
+                    // Since the dictionary has been changed, make sure it is updated
+                    serializedObject.ApplyModifiedProperties();
                 }
                 // Otherwise, copy the one back from the target 
                 else
