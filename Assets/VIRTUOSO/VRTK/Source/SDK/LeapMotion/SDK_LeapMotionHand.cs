@@ -45,6 +45,14 @@ namespace VRTK
             }
         }
 
+        public override bool IsConnected
+        {
+            get
+            {
+                return (cachedLeapServiceProvider != null) ? cachedLeapServiceProvider.IsConnected() : false;
+            }
+        }
+
         public override GameObject GetHandController()
         {
             GameObject hand = GetSDKManagerHandController();

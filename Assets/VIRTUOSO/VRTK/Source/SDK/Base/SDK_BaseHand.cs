@@ -27,6 +27,11 @@ namespace VRTK
 
         #region AbstractMethods
         /// <summary>
+        /// The IsConnected property returns true if the device itself is reporting that it is connected and tracking.
+        /// </summary>
+        public abstract bool IsConnected { get; }
+
+        /// <summary>
         /// The GetHandController method returns the main GameObject device that is used to track the hands.
         /// </summary>
         /// <returns>The GameObject that represents the device that is tracking the hands.</returns>

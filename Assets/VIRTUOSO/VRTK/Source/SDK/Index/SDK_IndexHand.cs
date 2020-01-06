@@ -40,6 +40,14 @@ namespace VRTK
             }
         }
 
+        public override bool IsConnected
+        {
+            get
+            {
+                return GetRightHand() != null || GetLeftHand() != null;
+            }
+        }
+
         public override GameObject GetHandController()
         {
             GameObject hand = GetSDKManagerHandController();

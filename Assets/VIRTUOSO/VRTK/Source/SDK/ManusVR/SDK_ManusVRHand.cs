@@ -24,6 +24,12 @@ namespace VRTK
 #if VRTK_DEFINE_SDK_MANUS_VR
         protected HandData cachedHandData;
 
+        public override bool IsConnected
+        {
+            // TODO
+            get;
+        }
+
         public override GameObject GetHandController()
         {
             GameObject hand = GetSDKManagerHandController();

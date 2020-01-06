@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using CharlesRiverAnalytics.Virtuoso;
 using VRTK;
 
 namespace CharlesRiverAnalytics.Virtuoso.Gestures
@@ -12,17 +10,18 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
     /// that also include more complex elements like basic movement, palm angle, etc.
     /// 
     /// Author: Dan Duggan (dduggan@cra.com) October 2018
+    /// Last updated: Nicolas Herrera (nherrera@cra.com), December 2019
     /// </summary>
     [CreateAssetMenu(menuName = "VIRTUOSO/Advanced Gesture")]
     public class AdvancedGesture : Gesture
     {
         #region Public Variables
         public List<AdvancedGestureState> advancedGestureStateList = new List<AdvancedGestureState>();
-        [System.NonSerialized]
+        [NonSerialized]
         protected int currentGestureStateIndex;
-        [System.NonSerialized]
+        [NonSerialized]
         public Vector3 prevLeftPalmPosition;
-        [System.NonSerialized]
+        [NonSerialized]
         public Vector3 prevRightPalmPosition;
         [NonSerialized]
         protected VRTK_InteractGrab cachedLeftHandGrabber = null;
@@ -34,18 +33,20 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
         // Adds a delay after a gesture is triggered to prevent it from turning on/off too quickly
         public float gestureCooldown;
         #endregion
+
         #region Control Variables
-        [System.NonSerialized]
+        [NonSerialized]
         protected float gestureCooldownStartTime = 0;
         protected float startupDelayTime = 1.0f;
+        protected bool gestureHasStarted = false;
+        protected bool cooldownHasStarted = false;
         #endregion
 
         #region Gesture Detection Code
-
         public override bool IsGestureOccuring(SDK_BaseGestureLibrary.Hand specificHand)
         {
             // if not detected, it cannot be gesturing
-            if(! VRTK_SDK_Bridge.GetHandSDK().GetGestureLibrary().IsHandDetected(specificHand))
+            if (VRTK_SDK_Bridge.GetHandSDK().GetGestureLibrary() != null && !VRTK_SDK_Bridge.GetHandSDK().GetGestureLibrary().IsHandDetected(specificHand))
             {
                 return false;
             }
@@ -53,6 +54,13 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
             // OpenMG has a habit of claiming gestures are occuring at the start of the scene before hands are even detected. 
             // this delay ensures that no gesture fire until the system is fully started
             if (Time.time < startupDelayTime)
+            {
+                return false;
+            }
+
+            // If this is not the specified hand, then the gesture cannot be occuring
+            if (advancedGestureStateList[currentGestureStateIndex].coreGesture.handSpecific &&
+               advancedGestureStateList[currentGestureStateIndex].coreGesture.specificHand != specificHand)
             {
                 return false;
             }
@@ -66,35 +74,80 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
             }
 
             bool isCooldownActive = Time.time <= (gestureCooldownStartTime + gestureCooldown);
+
+            // Condition for cooldown has not been met
+            if (!isCooldownActive)
+            {
+                cooldownHasStarted = false;
+            }
+
+            // Check core gesture first
             bool isCurrentStateOccuring = advancedGestureStateList[currentGestureStateIndex].coreGesture.IsGestureOccuring(specificHand);
-            foreach (AdvancedGestureCondition advCondition in advancedGestureStateList[currentGestureStateIndex].AdvancedGestureConditionList)
+
+            // If the core gesture is occuring, then start checking the rest of the avanced gesture states
+            if (isCurrentStateOccuring)
             {
-                isCurrentStateOccuring = isCurrentStateOccuring && advCondition.IsConditionOccuring(specificHand, this);
-            }
-            if (isCurrentStateOccuring && advancedGestureStateList.Count == currentGestureStateIndex + 1)
-            {
-                if (isCooldownActive == false)
+                if (!gestureHasStarted)
                 {
-                    gestureCooldownStartTime = Time.time;
-                }
-                return true;
-            }
-            else if (isCurrentStateOccuring)
-            {
-                currentGestureStateIndex++;
-                gestureStartTime = Time.time;
-                prevLeftPalmPosition = GetLeftHandPosition();
-                prevRightPalmPosition = GetRightHandPosition();
-            }
-            else
-            {
-                if (advancedGestureStateList[currentGestureStateIndex].holdTime != 0 && advancedGestureStateList[currentGestureStateIndex].holdTime + gestureStartTime <= Time.time)
-                {
-                    ResetGestureChain();
+                    gestureHasStarted = true;
+                    gestureStartTime = Time.time;
                 }
 
+                // Check every Advanced Gesture Condition for the current Gesture State
+                foreach (AdvancedGestureCondition advCondition in advancedGestureStateList[currentGestureStateIndex].AdvancedGestureConditionList)
+                {
+                    isCurrentStateOccuring = isCurrentStateOccuring && advCondition.IsConditionOccuring(specificHand, this);
+                }
+
+                // Core gesture and all advanced Gesture States have been satisifed
+                if (isCurrentStateOccuring && advancedGestureStateList.Count == currentGestureStateIndex + 1)
+                {
+                    // Gesture hasn't triggered the cool down yet, after this frame, that will change
+                    if (!isCooldownActive && !cooldownHasStarted)
+                    {
+                        gestureCooldownStartTime = Time.time;
+                        cooldownHasStarted = true;
+
+                        return true;
+                    }
+                    // Gesture is in cooldown, but the user hasn't released the first occurrence of the gesture
+                    else if (gestureStartTime <= gestureCooldownStartTime)
+                    {
+                        return true;
+                    }
+                    // Gesture is in cooldown, so the gesture cannot occur
+                    else
+                    {
+                        return false;
+                    }
+                }
+                // Core gesture has occured, but not every Gesture State has occured yet
+                else if (isCurrentStateOccuring)
+                {
+                    currentGestureStateIndex++;
+                    prevLeftPalmPosition = GetLeftHandPosition();
+                    prevRightPalmPosition = GetRightHandPosition();
+                }
+                else
+                {
+                    if (advancedGestureStateList[currentGestureStateIndex].holdTime != 0 && advancedGestureStateList[currentGestureStateIndex].holdTime + gestureStartTime <= Time.time)
+                    {
+                        ResetGestureChain();
+                    }
+
+                    return false;
+                }
             }
-            return isCooldownActive;
+            // Core gesture is not occuring
+            else
+            {
+                gestureHasStarted = false;
+
+                return false;
+            }
+
+            // The advanced gesture is not occuring
+            return false;
         }
         #endregion
 
@@ -125,25 +178,25 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
 
             // either caches aren't set up, or hands are no longer being tracked
             VRTK_InteractGrab[] handGrabbers = handRoot.GetComponentsInChildren<VRTK_InteractGrab>();
-            foreach(VRTK_InteractGrab grabber in handGrabbers)
+            foreach (VRTK_InteractGrab grabber in handGrabbers)
             {
-                if(! IsInteractGrabValid(grabber))
+                if (!IsInteractGrabValid(grabber))
                 {
                     continue;
                 }
-                if(grabber.controllerEvents is GestureControllerEvent)
+                if (grabber.controllerEvents is GestureControllerEvent)
                 {
                     GestureControllerEvent gestureController = (GestureControllerEvent)grabber.controllerEvents;
-                    if(gestureController.controllerHandId == SDK_BaseGestureLibrary.Hand.Left)
+                    if (gestureController.controllerHandId == SDK_BaseGestureLibrary.Hand.Left)
                     {
                         cachedLeftHandGrabber = grabber;
                     }
-                    else if(gestureController.controllerHandId == SDK_BaseGestureLibrary.Hand.Right)
+                    else if (gestureController.controllerHandId == SDK_BaseGestureLibrary.Hand.Right)
                     {
                         cachedRightHandGrabber = grabber;
                     }
 
-                    if(gestureController.controllerHandId == hand)
+                    if (gestureController.controllerHandId == hand)
                     {
                         return grabber.GetGrabbedObject() != null;
                     }
@@ -152,6 +205,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
             // fell through because hand was not found
             return false;
         }
+
         /// <summary>
         /// Returns the position of the left hand, or Vector3.zero if unavailable
         /// </summary>
@@ -219,6 +273,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
                 return currentLibrary.GetHandNormal(SDK_BaseGestureLibrary.Hand.Right);
             }
         }
+
         /// <summary>
         /// Sets the state machine for the advanced gesture back to start
         /// </summary>
@@ -232,19 +287,19 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
 
         protected bool IsInteractGrabValid(VRTK_InteractGrab interactGrab)
         {
-            if(interactGrab == null)
+            if (interactGrab == null)
             {
                 interactGrab = null;
                 return false;
             }
 
-            if(interactGrab.gameObject.activeInHierarchy == false)
+            if (interactGrab.gameObject.activeInHierarchy == false)
             {
                 interactGrab = null;
                 return false;
             }
 
-            if(interactGrab.isActiveAndEnabled == false)
+            if (interactGrab.isActiveAndEnabled == false)
             {
                 return false;
             }
@@ -252,15 +307,15 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
             return true;
         }
         #endregion
-
     }
+
     #region Embedded Classes
     /// <summary>
     /// The advanced gesture state represents a step in an advanced gesture. It holds a number of gesture conditions that
     /// are each check to determine if the state is occuring as well as a single coreGesture that must be active for the
     /// state to be active.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class AdvancedGestureState
     {
         #region Class Enum
@@ -272,6 +327,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
             Hold
         }
         #endregion
+
         #region Public Variables and Properties
         // name is for readability but serves no other function
         public string gestureName = "GestureName";
@@ -303,6 +359,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
                 return conditions;
             }
         }
+
         public List<MovementGestureCondition> movementConditionList = new List<MovementGestureCondition>();
         public List<HoldGestureCondition> holdConditionList = new List<HoldGestureCondition>();
         public List<PalmNormalCondition> palmConditions = new List<PalmNormalCondition>();
@@ -311,14 +368,12 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
         // used to decide the class for new conditions created in the editor
         public AdvancedConditionType editorNewConditionType;
         #endregion
-
-
     }
 
     /// <summary>
     /// The base class for gesture conditions is non-abstract because Unity serialization breaks with abstract class hierarchies
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class AdvancedGestureCondition
     {
         /// <summary>
@@ -330,20 +385,20 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
         {
             return false;
         }
-
     }
 
     /// <summary>
     /// The movement gesture condition determines if the hand making the gesture has moved since the previous state.
     /// It has several options but it is noteable that none of those options allow for specific directions of travel.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class MovementGestureCondition : AdvancedGestureCondition
     {
         #region Embedded Enum
         // determines how the movement check is made
         public enum MovementOperator { GreaterThan, LessThan, EqualTo }
         #endregion
+
         #region Public Variables
         public MovementOperator distanceOperator;
         public float distanceFromPreviousGesture;
@@ -355,6 +410,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
         {
             Vector3 palmPosition;
             Vector3 previousPalmPosition;
+
             if (specificHand == SDK_BaseGestureLibrary.Hand.Left)
             {
                 previousPalmPosition = advancedGestureInfo.prevLeftPalmPosition;
@@ -409,7 +465,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
     /// <summary>
     /// The palm vector condition passes/fails based on where the player's palm is facing relative to other objects
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class PalmNormalCondition : AdvancedGestureCondition
     {
         #region Embedded Enums
@@ -494,14 +550,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
 
             float dotProduct = Vector3.Dot(otherVec, palmNormal);
             // close to 1 -> similar direction
-            if (dotProduct >= 1 - tolerance)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (dotProduct >= 1 - tolerance);
         }
         #endregion
     }
@@ -509,7 +558,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
     /// <summary>
     /// The hold gesture condition passes if the core gesture is held for a specific amount of time
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class HoldGestureCondition : AdvancedGestureCondition
     {
         #region Public Variables
@@ -528,7 +577,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
     /// Checks if a specific gesture is being held by the other hand. Checking if another advanced gesutre is occuring is NOT recommended
     /// because it could lead to recursion.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class SimultaneousGesture : AdvancedGestureCondition
     {
         #region Public Variables
