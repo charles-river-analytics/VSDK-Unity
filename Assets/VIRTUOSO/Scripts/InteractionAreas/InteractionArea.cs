@@ -51,6 +51,14 @@ namespace CharlesRiverAnalytics.Virtuoso.InteractionAreas
                 return currentInteractionObject;
             }
         }
+
+        public List<GameObject> ObjectsInInteractionAreaList
+        {
+            get
+            {
+                return currentValidObjects;
+            }
+        }
         #endregion
 
         #region ProtectedVariables
