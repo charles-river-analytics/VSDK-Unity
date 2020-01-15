@@ -223,13 +223,13 @@ namespace VRTK
         protected bool forceDisabled;
         protected Vector3 previousLocalScale = Vector3.zero;
         protected bool startDisabled = false;
-        protected InteractionArea storedInteractionArea;
+        protected HashSet<InteractionArea> storedInteractionAreas = new HashSet<InteractionArea>();
 
-        public InteractionArea StoredInteractionArea
+        public HashSet<InteractionArea> StoredInteractionAreas
         {
             get
             {
-                return storedInteractionArea;
+                return storedInteractionAreas;
             }
         }
 
@@ -875,7 +875,7 @@ namespace VRTK
                 case ValidDropTypes.DropAnywhere:
                     return true;
                 case ValidDropTypes.DropValidInteractionArea:
-                    return (storedInteractionArea != null);
+                    return (storedInteractionAreas != null);
             }
             return false;
         }
@@ -1492,12 +1492,22 @@ namespace VRTK
         #region InteractionAreaMethods
         public virtual void InteractionAreaEntered(object o, InteractionAreaEventArgs e)
         {
-            storedInteractionArea = o as InteractionArea;
+            InteractionArea enteredInteractionArea = o as InteractionArea;
+
+            if(o != null)
+            {
+                storedInteractionAreas.Add(enteredInteractionArea);
+            }
         }
 
         public virtual void InteractionAreaExited(object o, InteractionAreaEventArgs e)
         {
-            storedInteractionArea = null;
+            InteractionArea exitedInteractionArea = o as InteractionArea;
+
+            if(exitedInteractionArea != null)
+            {
+                storedInteractionAreas.Remove(exitedInteractionArea);
+            }
         }
 
         public virtual void InteractionAreaUsed(object o, InteractionAreaEventArgs e)

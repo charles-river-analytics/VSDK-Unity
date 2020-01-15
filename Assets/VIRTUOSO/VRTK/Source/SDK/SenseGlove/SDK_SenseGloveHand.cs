@@ -32,6 +32,12 @@ namespace VRTK
             return hand;
         }
 
+        public override bool IsConnected
+        {
+            // TODO
+            get;
+        }
+
         public override GameObject GetLeftHand()
         {
             return GetHand(ConnectionMethod.NextLeftHand);

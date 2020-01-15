@@ -27,7 +27,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Reaction
 
         #region ProtectedVariables
         protected List<DynamicDelegate> dynamicEventList;
-        // These guys are used to temporarily hold the dictionary keys/values to help serialize the dictionary
+        // These variables are used to temporarily hold the dictionary keys/values to help serialize the dictionary
         [SerializeField]
         protected List<string> _keyList = new List<string>();
         [SerializeField]
@@ -35,10 +35,13 @@ namespace CharlesRiverAnalytics.Virtuoso.Reaction
         #endregion
 
         #region UnityFunctions
-        public void Awake()
+        protected void Awake()
         {
             dynamicEventList = new List<DynamicDelegate>();
+        }
 
+        protected void OnEnable()
+        {
             // Go through every event and hook into the given reactions
             if(eventSender != null)
             {
@@ -66,6 +69,8 @@ namespace CharlesRiverAnalytics.Virtuoso.Reaction
         {
             // Unregister from all dynamic events
             EventUtility.UnsubscribeFromAllEvents(dynamicEventList);
+
+            dynamicEventList.Clear();
         }
         #endregion
 

@@ -11,6 +11,8 @@ namespace VRTK
     [SDK_Description(typeof(SDK_FallbackSystem))]
     public class SDK_FallbackHand : SDK_BaseHand
     {
+        public override bool IsConnected { get { return true; } }
+
         public override GameObject GetHandController()
         {
             return null;

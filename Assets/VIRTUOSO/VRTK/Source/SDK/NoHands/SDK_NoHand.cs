@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace VRTK {
+namespace VRTK
+{
     /// <summary>
     /// This SDK is used for setups without any tracked hands. It differs from Fallback in that Fallback is intended to catch
     /// missing files and prevent running, while no hands is an intended condition.
@@ -14,6 +15,8 @@ namespace VRTK {
     [SDK_Description("No Hands", SDK_NoHandDefines.ScriptingDefineSymbol, null, "Android")]
     public class SDK_NoHand : SDK_BaseHand
     {
+        public override bool IsConnected { get { return true; } }
+
         public override GameObject GetHandController()
         {
             return null;
