@@ -47,16 +47,36 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         protected override void StartHaptics(HumanBodyBones bodyPart, BodyCoordinateHit hitLocation, float intensity)
         {
 #if VRTK_DEFINE_SDK_OCULUS
+
+            if(hapticsClipLeft == null || hapticsClipRight == null)
+            {
+                OVRHaptics.Config.Load();
+                hapticsClipLeft = new OVRHapticsClip();
+                hapticsClipRight = new OVRHapticsClip();
+            }
+
+            int clipLengthBytes = 
+                Mathf.Min(
+                    Mathf.Max(OVRHaptics.Config.SampleRateHz * hapticDuration, OVRHaptics.Config.MinimumBufferSamplesCount), 
+                    OVRHaptics.Config.MaximumBufferSamplesCount
+                    );
+
             if (isLeftController)
             {
                 hapticsClipLeft.Reset();
-                hapticsClipLeft.WriteSample((byte)(intensity * byte.MaxValue));
+                for (int i = 0; i < clipLengthBytes; i++)
+                {
+                    hapticsClipLeft.WriteSample((byte)(intensity * byte.MaxValue));
+                }
                 OVRHaptics.LeftChannel.Preempt(hapticsClipLeft);
             }
             else
             {
                 hapticsClipRight.Reset();
-                hapticsClipRight.WriteSample((byte)(intensity * byte.MaxValue));
+                for (int i = 0; i < clipLengthBytes; i++)
+                {
+                    hapticsClipRight.WriteSample((byte)(intensity * byte.MaxValue));
+                }
                 OVRHaptics.RightChannel.Preempt(hapticsClipRight);
             }
 #endif
@@ -66,13 +86,13 @@ namespace CharlesRiverAnalytics.Virtuoso.Haptic
         {
             base.ApplyDefaultData(hapticSystemInfo);
 
-            isLeftController = ! (bool) hapticSystemInfo.AdditionalData[0];
+            isLeftController = !(bool)hapticSystemInfo.AdditionalData[0];
         }
 
         protected override void Instance_LoadedSetupChanged(VRTK_SDKManager sender, VRTK_SDKManager.LoadedSetupChangeEventArgs e)
         {
 #if VRTK_DEFINE_SDK_OCULUS
-            if (e.currentSetup.controllerSDKInfo.type == hapticSystemInfo.ConnectedSDKType)
+            if (hapticSystemInfo != null && e.currentSetup != null && e.currentSetup.controllerSDKInfo.type == hapticSystemInfo.ConnectedSDKType)
             {
                 OVRHaptics.Config.Load();
                 hapticsClipLeft = new OVRHapticsClip();

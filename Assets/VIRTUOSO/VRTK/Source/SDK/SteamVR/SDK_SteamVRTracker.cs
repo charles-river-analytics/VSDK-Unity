@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using UnityEngine;
     using Valve.VR;
-#if !VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER
+#if ! VRTK_DEFINE_STEAMVR_PLUGIN_LEGACY
     using System;
     using System.Reflection;
 #endif
@@ -30,7 +30,7 @@
         protected Dictionary<GameObject, SteamVR_TrackedObject> cachedTrackedObjectsByGameObject = new Dictionary<GameObject, SteamVR_TrackedObject>();
         protected Dictionary<uint, SteamVR_TrackedObject> cachedTrackedObjectsByIndex = new Dictionary<uint, SteamVR_TrackedObject>();
 
-#if !VRTK_DEFINE_STEAMVR_PLUGIN_1_2_2_OR_NEWER && !VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
+#if ! VRTK_DEFINE_STEAMVR_PLUGIN_LEGACY && ! VRTK_DEFINE_STEAMVR_PLUGIN_2_0_0_OR_NEWER
         /// <summary>
         /// This method is called just after unloading the <see cref="VRTK_SDKSetup"/> that's using this SDK.
         /// </summary>
@@ -173,11 +173,7 @@
 
         protected virtual void Awake()
         {
-#if VRTK_DEFINE_STEAMVR_PLUGIN_1_1_1_OR_OLDER
-            SteamVR_Utils.Event.Listen("TrackedDeviceRoleChanged", OnTrackedDeviceRoleChanged);
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_0
-            SteamVR_Events.System("TrackedDeviceRoleChanged").Listen(OnTrackedDeviceRoleChanged);
-#elif VRTK_DEFINE_STEAMVR_PLUGIN_1_2_1_OR_NEWER
+#if VRTK_DEFINE_SDK_STEAMVR
             SteamVR_Events.System(EVREventType.VREvent_TrackedDeviceRoleChanged).Listen(OnTrackedDeviceRoleChanged);
 #endif
             SetTrackedControllerCaches(true);

@@ -27,6 +27,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
             // do not draw the control variables
             AdvancedGesture advTarget = (AdvancedGesture)target;
             advTarget.gestureCooldown = EditorGUILayout.FloatField("Cooldown (seconds)", advTarget.gestureCooldown);
+            advTarget.allowedWhileHoldingObjects = EditorGUILayout.Toggle("Allow While Holding", advTarget.allowedWhileHoldingObjects);
 
             foreach (AdvancedGestureState advState in advTarget.advancedGestureStateList)
             {

@@ -1,6 +1,4 @@
-﻿using CharlesRiverAnalytics.Virtuoso.Scriptable;
-using System;
-using VRTK;
+﻿using VRTK;
 
 namespace CharlesRiverAnalytics.Virtuoso.Gestures
 {
@@ -12,197 +10,183 @@ namespace CharlesRiverAnalytics.Virtuoso.Gestures
     /// Based on VRTK/Scripts/Interactions/VRTK_ControllerEvents
     /// 
     /// Written by: Nicolas Herrera (nherrera@cra.com), 2018
-    /// Last Modified: Dan Duggan (dduggan@cra.com) January 2019
+    /// Last Modified: Nicolas Herrera (nherrera@cra.com), December 2019
     /// </summary>
-    /// <remarks>This class only provides calls to the Pressed/Released method calls. The classes are left
-    /// virtual so anyone may override them and expand functionality to the other button states.
-    /// </remarks>
     public class GestureControllerEvent : VRTK_ControllerEvents
     {
         #region PublicVariables
         public SDK_BaseGestureLibrary.Hand controllerHandId;
-        public Gesture triggerGesture;
-        public Gesture gripGesture;
-        public Gesture touchpadGesture;
-        public Gesture buttonOneGesture;
-        public Gesture buttonTwoGesture;
-        public Gesture startMenuGesture;
         #endregion
 
-        #region ProtectedVariables
-        protected struct GestureButtonStates
+        #region PublicAPI
+        public void PressButton(ButtonAlias buttonToPress)
         {
-            public GestureButtonStates(bool allValues)
+            ControllerInteractionEventArgs controllerEventArgs = SetControllerEvent();
+
+            switch (buttonToPress)
             {
-                isGestureButtonPressed = allValues;
-                wasPressedLastFrame = allValues;
-                wasPressedThisFrame = allValues;
-                wasReleasedThisFrame = allValues;
-                wasReleasedLastFrame = allValues;
-            }
-
-            public bool isGestureButtonPressed;
-            public bool wasPressedLastFrame;
-            public bool wasPressedThisFrame;
-            public bool wasReleasedThisFrame;
-            public bool wasReleasedLastFrame;
-        }
-
-        protected GestureButtonStates triggerGestureButton;
-        protected GestureButtonStates gripGestureButton;
-        protected GestureButtonStates touchPadGestureButton;
-        protected GestureButtonStates buttonOneGestureButton;
-        protected GestureButtonStates buttonTwoGestureButton;
-        protected GestureButtonStates startMenuGestureButton;
-
-        #endregion
-
-        #region UnityFunctions
-        protected override void Awake()
-        {
-            base.Awake();
-
-            triggerGestureButton = new GestureButtonStates(false);
-            gripGestureButton = new GestureButtonStates(false);
-            touchPadGestureButton = new GestureButtonStates(false);
-            buttonOneGestureButton = new GestureButtonStates(false);
-            buttonTwoGestureButton = new GestureButtonStates(false);
-            startMenuGestureButton = new GestureButtonStates(false);
-        }
-        protected override void Update()
-        {
-            CheckTriggerGesture();
-            CheckGripGesture();
-            CheckTouchpadGesture();
-            CheckButtonOneGesture();
-            CheckButtonTwoGesture();
-            CheckStartMenuGesture();
-        }
-        #endregion
-
-        #region GestureControllerChecks
-        /// <summary>
-        /// General call for checking if a gesture button has reached it's press/release state
-        /// </summary>
-        /// <param name="givenGestureButton">The parameter that holds the state of the gesture button</param>
-        /// <param name="givenGesture">The Gesture that contains the gesture info of what needs to be checked</param>
-        /// <param name="buttonPressAction">What actions to take when the gesture-button reaches the press state</param>
-        /// <param name="buttonReleaseAction">What actions to take when the gesture-button reaches the release state</param>
-        protected virtual void CheckGestureButton(ref GestureButtonStates givenGestureButton, Gesture givenGesture, Action buttonPressAction, Action buttonReleaseAction)
-        {
-            if (givenGesture == null)
-                return;
-
-            CheckGestureButtonPressed(ref givenGestureButton, givenGesture, buttonPressAction);
-            CheckGestureButtonReleased(ref givenGestureButton, givenGesture, buttonReleaseAction);
-
-            //Save frame information
-            givenGestureButton.wasPressedLastFrame = givenGestureButton.wasPressedThisFrame;
-            givenGestureButton.wasReleasedLastFrame = givenGestureButton.wasReleasedThisFrame;
-        }
-
-        protected virtual void CheckGestureButtonPressed(ref GestureButtonStates givenGestureButton, Gesture givenGesture, Action buttonPressAction)
-        {
-            // Pressed start
-            givenGestureButton.wasPressedThisFrame = givenGesture.IsGestureOccuring(controllerHandId);
-
-            if (givenGestureButton.wasPressedThisFrame && !givenGestureButton.wasPressedLastFrame && !givenGestureButton.isGestureButtonPressed)
-            {
-                givenGestureButton.isGestureButtonPressed = true;
-
-                buttonPressAction();
+                case ButtonAlias.Undefined:
+                    break;
+                case ButtonAlias.TriggerHairline:
+                    OnTriggerHairlineStart(controllerEventArgs);
+                    break;
+                case ButtonAlias.TriggerTouch:
+                    OnTriggerTouchStart(controllerEventArgs);
+                    break;
+                case ButtonAlias.TriggerPress:
+                    OnTriggerPressed(controllerEventArgs);
+                    break;
+                case ButtonAlias.TriggerClick:
+                    OnTriggerClicked(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripHairline:
+                    OnGripHairlineStart(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripTouch:
+                    OnGripTouchStart(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripPress:
+                    OnGripPressed(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripClick:
+                    OnGripClicked(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadTouch:
+                    OnTouchpadTouchStart(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadPress:
+                    OnTouchpadPressed(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadTwoTouch:
+                    OnTouchpadTwoTouchStart(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadTwoPress:
+                    OnTouchpadTwoPressed(controllerEventArgs);
+                    break;
+                case ButtonAlias.ButtonOneTouch:
+                    OnButtonOneTouchStart(controllerEventArgs);
+                    break;
+                case ButtonAlias.ButtonOnePress:
+                    OnButtonOnePressed(controllerEventArgs);
+                    break;
+                case ButtonAlias.ButtonTwoTouch:
+                    OnButtonTwoTouchStart(controllerEventArgs);
+                    break;
+                case ButtonAlias.ButtonTwoPress:
+                    OnButtonTwoPressed(controllerEventArgs);
+                    break;
+                case ButtonAlias.StartMenuPress:
+                    OnStartMenuPressed(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadSense:
+                    OnTouchpadSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.TriggerSense:
+                    OnTriggerSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.MiddleFingerSense:
+                    OnMiddleFingerSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.RingFingerSense:
+                    OnRingFingerSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.PinkyFingerSense:
+                    OnPinkyFingerSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripSense:
+                    OnGripSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripSensePress:
+                    OnGripSensePressed(controllerEventArgs);
+                    break;
+                default:
+                    break;
             }
         }
 
-        protected virtual void CheckGestureButtonReleased(ref GestureButtonStates givenGestureButton, Gesture givenGesture, Action buttonReleaseAction)
+        public void ReleaseButton(ButtonAlias buttonToPress)
         {
-            // Pressed end
-            givenGestureButton.wasReleasedThisFrame = !givenGesture.IsGestureOccuring(controllerHandId);
+            ControllerInteractionEventArgs controllerEventArgs = SetControllerEvent();
 
-            if (givenGestureButton.wasReleasedThisFrame && !givenGestureButton.wasReleasedLastFrame && givenGestureButton.isGestureButtonPressed)
+            switch (buttonToPress)
             {
-                givenGestureButton.isGestureButtonPressed = false;
-
-                buttonReleaseAction();
+                case ButtonAlias.Undefined:
+                    break;
+                case ButtonAlias.TriggerHairline:
+                    OnTriggerHairlineEnd(controllerEventArgs);
+                    break;
+                case ButtonAlias.TriggerTouch:
+                    OnTriggerTouchEnd(controllerEventArgs);
+                    break;
+                case ButtonAlias.TriggerPress:
+                    OnTriggerReleased(controllerEventArgs);
+                    break;
+                case ButtonAlias.TriggerClick:
+                    OnTriggerUnclicked(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripHairline:
+                    OnGripHairlineEnd(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripTouch:
+                    OnGripTouchEnd(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripPress:
+                    OnGripReleased(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripClick:
+                    OnGripUnclicked(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadTouch:
+                    OnTouchpadTouchEnd(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadPress:
+                    OnTouchpadReleased(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadTwoTouch:
+                    OnTouchpadTwoTouchEnd(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadTwoPress:
+                    OnTouchpadTwoReleased(controllerEventArgs);
+                    break;
+                case ButtonAlias.ButtonOneTouch:
+                    OnButtonOneTouchEnd(controllerEventArgs);
+                    break;
+                case ButtonAlias.ButtonOnePress:
+                    OnButtonOneReleased(controllerEventArgs);
+                    break;
+                case ButtonAlias.ButtonTwoTouch:
+                    OnButtonTwoTouchEnd(controllerEventArgs);
+                    break;
+                case ButtonAlias.ButtonTwoPress:
+                    OnButtonTwoReleased(controllerEventArgs);
+                    break;
+                case ButtonAlias.StartMenuPress:
+                    OnStartMenuReleased(controllerEventArgs);
+                    break;
+                case ButtonAlias.TouchpadSense:
+                    OnTouchpadSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.TriggerSense:
+                    OnTriggerSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.MiddleFingerSense:
+                    OnMiddleFingerSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.RingFingerSense:
+                    OnRingFingerSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.PinkyFingerSense:
+                    OnPinkyFingerSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripSense:
+                    OnGripSenseAxisChanged(controllerEventArgs);
+                    break;
+                case ButtonAlias.GripSensePress:
+                    OnGripSenseReleased(controllerEventArgs);
+                    break;
+                default:
+                    break;
             }
-        }
-
-        protected virtual void CheckTriggerGesture()
-        {
-            CheckGestureButton(ref triggerGestureButton, triggerGesture,
-                                () =>
-                                {
-                                    OnTriggerPressed(SetControllerEvent(ref triggerPressed, true, 1.0f));
-                                },
-                                () =>
-                                {
-                                    OnTriggerReleased(SetControllerEvent(ref triggerPressed, false, 0f));
-                                });
-        }
-
-        protected virtual void CheckGripGesture()
-        {
-            CheckGestureButton(ref gripGestureButton, gripGesture,
-                                () =>
-                                {
-                                    OnGripPressed(SetControllerEvent(ref gripPressed, true, 1.0f));
-                                },
-                                () =>
-                                {
-                                    OnGripReleased(SetControllerEvent(ref gripPressed, false, 0f));
-                                });
-        }
-
-        protected virtual void CheckTouchpadGesture()
-        {
-            CheckGestureButton(ref touchPadGestureButton, touchpadGesture,
-                                () =>
-                                {
-                                    OnTouchpadPressed(SetControllerEvent(ref touchpadPressed, true, 1f));
-                                },
-                                () =>
-                                {
-                                    OnTouchpadReleased(SetControllerEvent(ref touchpadPressed, false, 0f));
-                                });
-        }
-
-        protected virtual void CheckButtonOneGesture()
-        {
-            CheckGestureButton(ref buttonOneGestureButton, buttonOneGesture,
-                                () =>
-                                {
-                                    OnButtonOnePressed(SetControllerEvent(ref buttonOnePressed, true, 1f));
-                                },
-                                () =>
-                                {
-                                    OnButtonOneReleased(SetControllerEvent(ref buttonOnePressed, false, 0f));
-                                });
-        }
-
-        protected virtual void CheckButtonTwoGesture()
-        {
-            CheckGestureButton(ref buttonTwoGestureButton, buttonTwoGesture,
-                                () =>
-                                {
-                                    OnButtonTwoPressed(SetControllerEvent(ref buttonTwoPressed, true, 1f));
-                                },
-                                () =>
-                                {
-                                    OnButtonTwoReleased(SetControllerEvent(ref buttonTwoPressed, false, 0f));
-                                });
-        }
-
-        protected virtual void CheckStartMenuGesture()
-        {
-            CheckGestureButton(ref startMenuGestureButton, startMenuGesture,
-                               () =>
-                               {
-                                   OnStartMenuPressed(SetControllerEvent(ref startMenuPressed, true, 1f));
-                               },
-                               () =>
-                               {
-                                   OnStartMenuReleased(SetControllerEvent(ref startMenuPressed, false, 0f));
-                               });
         }
         #endregion
     }
