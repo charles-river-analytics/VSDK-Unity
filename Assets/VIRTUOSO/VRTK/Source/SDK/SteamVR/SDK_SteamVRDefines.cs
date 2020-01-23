@@ -48,7 +48,6 @@ namespace VRTK
             return version123Identified && !IsPluginVersion200OrNewer();
         }
 
-        [SDK_ScriptingDefineSymbolPredicate(ScriptingDefineSymbol, BuildTargetGroupName)]
         [SDK_ScriptingDefineSymbolPredicate(SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "STEAMVR_PLUGIN_VERSION_UNSUPPORTED", BuildTargetGroupName)]
         private static bool IsPluginVersionUnsupported()
         {
