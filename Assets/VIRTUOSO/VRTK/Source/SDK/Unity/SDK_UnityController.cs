@@ -85,7 +85,7 @@ namespace VRTK
 
         // This value controls the sensitivity of the trigger; due to a bug in the Unity code, touching a trigger causes the button to register as pressed
         // so instead we are using a hairline trigger value to determine if it is pressed or not.
-        protected float triggerActivationThreshold = 1.0f;
+        protected float triggerActivationThreshold = 0.9f;
 
 #elif !UNITY_2019_1_OR_NEWER
         protected Dictionary<ButtonTypes, bool> rightAxisButtonPressState = new Dictionary<ButtonTypes, bool>()
