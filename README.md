@@ -1,4 +1,4 @@
-![VIRTUOSO SDK](VIRTUOSO_Logo_Banner.png)
+![VIRTUOSO SDK](.github/VIRTUOSO_Logo_Banner.png)
 ## Overview
 
 The VIRTUOSO SDK (VSDK) is a Unity-based XR software
