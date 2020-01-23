@@ -1,10 +1,11 @@
-![VIRTUOSO SDK](.github/VIRTUOSO_Logo_Banner.png)
+
 ## Overview
 
-The VIRTUOSO SDK (VSDK) is a Unity-based XR software
-development kit that enables developers to quickly build XR experiences through
-systems for naturalistic user interactions and support across a wide variety of XR devices and peripherals. VSDK is completely free and open-source under the MIT License and
+The **VIRTUOSO SDK (VSDK)** is a Unity-based XR software
+development kit that enables developers to build XR experiences with naturalistic user interactions *faster* while including support for a variety of XR devices and peripherals, from HMDs to hand tracking and haptics. VSDK is completely free and open-source under the MIT License and
 is based on VRTK ([http://vrtk.io](http://vrtk.io/)).
+
+![VIRTUOSO SDK](.github/VIRTUOSO_Logo_Banner.png)
 
 Here are some of the features that make VSDK unique:
 
