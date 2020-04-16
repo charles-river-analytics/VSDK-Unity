@@ -99,15 +99,6 @@ namespace VRTK
         [Tooltip("If this is checked then the tooltips will be hidden when the headset is not looking at the controller.")]
         public bool hideWhenNotInView = true;
 
-        [Header("Obsolete Settings")]
-
-        [System.Obsolete("`VRTK_ControllerTooltips.retryInitMaxTries` has been deprecated as tooltip initialisation now uses the `VRTK_TrackedController.ControllerModelAvailable` event.")]
-        [ObsoleteInspector]
-        public int retryInitMaxTries = 10;
-        [System.Obsolete("`VRTK_ControllerTooltips.retryInitCounter` has been deprecated as tooltip initialisation now uses the `VRTK_TrackedController.ControllerModelAvailable` event.")]
-        [ObsoleteInspector]
-        public float retryInitCounter = 0.1f;
-
         /// <summary>
         /// Emitted when the controller tooltip is turned on.
         /// </summary>

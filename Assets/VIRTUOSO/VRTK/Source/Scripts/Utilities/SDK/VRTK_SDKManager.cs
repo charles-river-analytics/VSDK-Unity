@@ -374,12 +374,6 @@ namespace VRTK
         };
 #endif
 
-        [Header("Obsolete Settings")]
-
-        [Obsolete("`VRTK_SDKManager.persistOnLoad` has been deprecated and will be removed in a future version of VRTK. See https://github.com/thestonefox/VRTK/issues/1316 for details.")]
-        [ObsoleteInspector]
-        public bool persistOnLoad;
-
         /// <summary>
         /// The loaded SDK Setup. `null` if no setup is currently loaded.
         /// </summary>
@@ -885,9 +879,7 @@ namespace VRTK
                 StopCoroutine(checkRightControllerReadyRoutine);
             }
 
-#pragma warning disable 618
-            if (_instance == this && !persistOnLoad)
-#pragma warning restore 618
+            if (_instance == this)
             {
                 UnloadSDKSetup();
             }
@@ -900,9 +892,7 @@ namespace VRTK
                 _instance = this;
                 VRTK_SDK_Bridge.InvalidateCaches();
 
-#pragma warning disable 618
-                if (persistOnLoad && Application.isPlaying)
-#pragma warning restore 618
+                if (Application.isPlaying)
                 {
                     DontDestroyOnLoad(gameObject);
                 }

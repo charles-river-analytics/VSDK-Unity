@@ -385,18 +385,8 @@ namespace VRTK
         protected virtual void ToggleControllerVisibility(bool visible)
         {
             GameObject modelContainer = VRTK_DeviceFinder.GetModelAliasController(gameObject);
-            if (touchedObject != null)
-            {
-                ///[Obsolete]
-#pragma warning disable 0618
-                VRTK_InteractControllerAppearance[] controllerAppearanceScript = touchedObject.GetComponentsInParent<VRTK_InteractControllerAppearance>(true);
-#pragma warning restore 0618
-                if (controllerAppearanceScript.Length > 0)
-                {
-                    controllerAppearanceScript[0].ToggleControllerOnTouch(visible, modelContainer, touchedObject);
-                }
-            }
-            else if (visible)
+
+            if (visible)
             {
                 VRTK_ObjectAppearance.SetRendererVisible(modelContainer, touchedObject);
             }

@@ -416,8 +416,6 @@
                 }
             }
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("persistOnLoad"));
-
             serializedObject.ApplyModifiedProperties();
         }
 

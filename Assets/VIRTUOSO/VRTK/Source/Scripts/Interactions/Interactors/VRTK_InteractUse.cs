@@ -304,21 +304,6 @@ namespace VRTK
             }
         }
 
-        protected virtual void ToggleControllerVisibility(bool visible)
-        {
-            if (usingObject != null)
-            {
-                ///[Obsolete]
-#pragma warning disable 0618
-                VRTK_InteractControllerAppearance[] controllerAppearanceScript = usingObject.GetComponentsInParent<VRTK_InteractControllerAppearance>(true);
-#pragma warning restore 0618
-                if (controllerAppearanceScript.Length > 0)
-                {
-                    controllerAppearanceScript[0].ToggleControllerOnUse(visible, controllerReference.model, usingObject);
-                }
-            }
-        }
-
         protected virtual void UseInteractedObject(GameObject touchedObject)
         {
             if ((usingObject == null || usingObject != touchedObject) && IsObjectUsable(touchedObject) && interactTouch != null)
@@ -336,7 +321,6 @@ namespace VRTK
                     }
 
                     usingObjectScript.StartUsing(this);
-                    ToggleControllerVisibility(false);
                     OnControllerUseInteractableObject(interactTouch.SetControllerInteractEvent(usingObject));
                 }
             }
@@ -348,11 +332,12 @@ namespace VRTK
             {
                 OnControllerStartUnuseInteractableObject(interactTouch.SetControllerInteractEvent(usingObject));
                 VRTK_InteractableObject usingObjectCheck = usingObject.GetComponent<VRTK_InteractableObject>();
+
                 if (usingObjectCheck != null && completeStop)
                 {
                     usingObjectCheck.StopUsing(this, false);
                 }
-                ToggleControllerVisibility(true);
+
                 OnControllerUnuseInteractableObject(interactTouch.SetControllerInteractEvent(usingObject));
                 usingObject = null;
             }

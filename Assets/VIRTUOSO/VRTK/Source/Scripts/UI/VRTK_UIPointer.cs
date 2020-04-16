@@ -113,15 +113,6 @@ namespace VRTK
         [Tooltip("A custom transform to use as the origin of the pointer. If no pointer origin transform is provided then the transform the script is attached to is used.")]
         public Transform customOrigin = null;
 
-        [Header("Obsolete Settings")]
-
-        [System.Obsolete("`VRTK_UIPointer.controller` has been replaced with `VRTK_UIPointer.controllerEvents`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public VRTK_ControllerEvents controller;
-        [System.Obsolete("`VRTK_UIPointer.pointerOriginTransform` has been replaced with `VRTK_UIPointer.customOrigin`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public Transform pointerOriginTransform = null;
-
         [HideInInspector]
         public PointerEventData pointerEventData;
         [HideInInspector]
@@ -439,10 +430,6 @@ namespace VRTK
 
         protected virtual void OnEnable()
         {
-#pragma warning disable 0618
-            controllerEvents = (controller != null && controllerEvents == null ? controller : controllerEvents);
-            customOrigin = (pointerOriginTransform != null && customOrigin == null ? pointerOriginTransform : customOrigin);
-#pragma warning restore 0618
             attachedTo = (attachedTo == null ? gameObject : attachedTo);
             controllerEvents = (controllerEvents != null ? controllerEvents : GetComponentInParent<VRTK_ControllerEvents>());
             ConfigureEventSystem();

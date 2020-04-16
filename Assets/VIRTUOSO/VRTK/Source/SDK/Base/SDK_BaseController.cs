@@ -332,14 +332,6 @@ namespace VRTK
         public abstract Transform GetControllerOrigin(VRTK_ControllerReference controllerReference);
 
         /// <summary>
-        /// The GenerateControllerPointerOrigin method can create a custom pointer origin Transform to represent the pointer position and forward.
-        /// </summary>
-        /// <param name="parent">The GameObject that the origin will become parent of. If it is a controller then it will also be used to determine the hand if required.</param>
-        /// <returns>A generated Transform that contains the custom pointer origin.</returns>
-        [System.Obsolete("GenerateControllerPointerOrigin has been deprecated and will be removed in a future version of VRTK.")]
-        public abstract Transform GenerateControllerPointerOrigin(GameObject parent);
-
-        /// <summary>
         /// The GetControllerLeftHand method returns the GameObject containing the representation of the left hand controller.
         /// </summary>
         /// <param name="actual">If true it will return the actual controller, if false it will return the script alias controller GameObject.</param>
