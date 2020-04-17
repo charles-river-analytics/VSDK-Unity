@@ -2,6 +2,7 @@
 namespace VRTK
 {
     using GrabAttachMechanics;
+    using System;
     using UnityEngine;
 
     /// <summary>
@@ -9,7 +10,7 @@ namespace VRTK
     /// </summary>
     /// <param name="controllerReference">The reference to the controller doing the interaction.</param>
     /// <param name="target">The GameObject of the interactable object that is being interacted with by the controller.</param>
-    public struct PlayerClimbEventArgs
+    public class PlayerClimbEventArgs : EventArgs
     {
         public VRTK_ControllerReference controllerReference;
         public GameObject target;
@@ -168,10 +169,11 @@ namespace VRTK
 
         protected virtual PlayerClimbEventArgs SetPlayerClimbEvent(VRTK_ControllerReference controllerReference, GameObject target)
         {
-            PlayerClimbEventArgs e;
-            e.controllerReference = controllerReference;
-            e.target = target;
-            return e;
+            return new PlayerClimbEventArgs
+            {
+                controllerReference = controllerReference,
+                target = target
+            };
         }
 
         protected virtual void InitListeners(bool state)

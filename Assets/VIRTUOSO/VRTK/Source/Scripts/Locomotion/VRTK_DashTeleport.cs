@@ -3,12 +3,13 @@ namespace VRTK
 {
     using UnityEngine;
     using System.Collections;
+    using System;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="hits">An array of RaycastHits that the CapsuleCast has collided with.</param>
-    public struct DashTeleportEventArgs
+    public class DashTeleportEventArgs : EventArgs
     {
         public RaycastHit[] hits;
     }
@@ -195,9 +196,10 @@ namespace VRTK
 
         protected virtual DashTeleportEventArgs SetDashTeleportEvent(RaycastHit[] hits)
         {
-            DashTeleportEventArgs e;
-            e.hits = hits;
-            return e;
+            return new DashTeleportEventArgs
+            {
+                hits = hits
+            };
         }
     }
 }

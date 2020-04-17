@@ -4,13 +4,14 @@ namespace VRTK
     using UnityEngine;
     using System.Collections;
     using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="target">The target GameObject the event is dealing with.</param>
     /// <param name="collider">An optional collider that the body physics is colliding with.</param>
-    public struct BodyPhysicsEventArgs
+    public class BodyPhysicsEventArgs : EventArgs
     {
         public GameObject target;
         public Collider collider;
@@ -672,10 +673,11 @@ namespace VRTK
 
         protected virtual BodyPhysicsEventArgs SetBodyPhysicsEvent(GameObject target, Collider collider)
         {
-            BodyPhysicsEventArgs e;
-            e.target = target;
-            e.collider = collider;
-            return e;
+            return new BodyPhysicsEventArgs
+            {
+                target = target,
+                collider = collider
+            };
         }
 
         protected virtual void CalculateVelocity()

@@ -3,6 +3,7 @@ namespace VRTK.GrabAttachMechanics
 {
     using UnityEngine;
     using System.Collections;
+    using System;
 
     /// <summary>
     /// Event Payload
@@ -11,7 +12,7 @@ namespace VRTK.GrabAttachMechanics
     /// <param name="currentAngle">The current angle the Interactable Object is rotated to.</param>
     /// <param name="normalizedAngle">The normalized angle (between `0f` and `1f`) the Interactable Object is rotated to.</param>
     /// <param name="rotationSpeed">The speed in which the rotation is occuring.</param>
-    public struct RotateTransformGrabAttachEventArgs
+    public class RotateTransformGrabAttachEventArgs : EventArgs
     {
         public GameObject interactingObject;
         public float currentAngle;
@@ -527,12 +528,13 @@ namespace VRTK.GrabAttachMechanics
 
         protected virtual RotateTransformGrabAttachEventArgs SetEventPayload()
         {
-            RotateTransformGrabAttachEventArgs e;
-            e.interactingObject = (grabbedObjectScript != null ? grabbedObjectScript.GetGrabbingObject() : null);
-            e.currentAngle = GetAngle();
-            e.normalizedAngle = GetNormalizedAngle();
-            e.rotationSpeed = currentRotationSpeed;
-            return e;
+            return new RotateTransformGrabAttachEventArgs
+            {
+                interactingObject = (grabbedObjectScript != null ? grabbedObjectScript.GetGrabbingObject() : null),
+                currentAngle = GetAngle(),
+                normalizedAngle = GetNormalizedAngle(),
+                rotationSpeed = currentRotationSpeed
+            };
         }
     }
 }

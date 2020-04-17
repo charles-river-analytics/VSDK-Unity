@@ -1,13 +1,14 @@
 ﻿// Play Area Cursor|Pointers|10050
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="collidedWith">The collider that is/was being collided with.</param>
-    public struct PlayAreaCursorEventArgs
+    public class PlayAreaCursorEventArgs : EventArgs
     {
         public Collider collider;
     }
@@ -292,9 +293,10 @@ namespace VRTK
 
         protected virtual PlayAreaCursorEventArgs SetEventPayload(Collider collider)
         {
-            PlayAreaCursorEventArgs e;
-            e.collider = collider;
-            return e;
+            return new PlayAreaCursorEventArgs
+            {
+                collider = collider
+            };
         }
 
         protected virtual void EmitEvent(Collider collider)

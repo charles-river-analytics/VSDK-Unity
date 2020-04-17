@@ -541,9 +541,7 @@ namespace VRTK
 
         private void OnEnable()
         {
-#pragma warning disable 618
-            if (VRTK_SDKManager.ValidInstance() && !VRTK_SDKManager.instance.persistOnLoad)
-#pragma warning restore 618
+            if (VRTK_SDKManager.ValidInstance())
             {
                 PopulateObjectReferences(false);
             }

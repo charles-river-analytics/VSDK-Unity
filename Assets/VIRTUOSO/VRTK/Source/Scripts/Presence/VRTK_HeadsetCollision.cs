@@ -1,6 +1,7 @@
 ﻿// Headset Collision|Presence|70010
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
@@ -8,7 +9,7 @@ namespace VRTK
     /// </summary>
     /// <param name="collider">The Collider of the game object the headset has collided with.</param>
     /// <param name="currentTransform">The current Transform of the object that the Headset Collision Fade script is attached to (Camera).</param>
-    public struct HeadsetCollisionEventArgs
+    public class HeadsetCollisionEventArgs : EventArgs
     {
         public Collider collider;
         public Transform currentTransform;
@@ -267,10 +268,11 @@ namespace VRTK
 
         protected virtual HeadsetCollisionEventArgs SetHeadsetCollisionEvent(Collider collider, Transform currentTransform)
         {
-            HeadsetCollisionEventArgs e;
-            e.collider = collider;
-            e.currentTransform = currentTransform;
-            return e;
+            return new HeadsetCollisionEventArgs
+            {
+                collider = collider,
+                currentTransform = currentTransform
+            };
         }
 
         protected virtual bool ValidTarget(Transform target)

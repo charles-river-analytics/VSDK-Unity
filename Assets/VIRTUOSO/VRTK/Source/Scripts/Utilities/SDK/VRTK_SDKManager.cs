@@ -57,7 +57,7 @@ namespace VRTK
         /// <param name="previousSetup">The previous loaded Setup. `null` if no previous Setup was loaded.</param>
         /// <param name="currentSetup">The current loaded Setup. `null` if no Setup is loaded anymore. See `errorMessage` to check whether this is `null` because of an error.</param>
         /// <param name="errorMessage">Explains why loading a list of Setups wasn't successful if `currentSetup` is `null` and an error occurred. `null` if no error occurred.</param>
-        public struct LoadedSetupChangeEventArgs
+        public class LoadedSetupChangeEventArgs : EventArgs
         {
             public readonly VRTK_SDKSetup previousSetup;
             public readonly VRTK_SDKSetup currentSetup;
@@ -373,12 +373,6 @@ namespace VRTK
 #endif
         };
 #endif
-
-        [Header("Obsolete Settings")]
-
-        [Obsolete("`VRTK_SDKManager.persistOnLoad` has been deprecated and will be removed in a future version of VRTK. See https://github.com/thestonefox/VRTK/issues/1316 for details.")]
-        [ObsoleteInspector]
-        public bool persistOnLoad;
 
         /// <summary>
         /// The loaded SDK Setup. `null` if no setup is currently loaded.
@@ -885,9 +879,7 @@ namespace VRTK
                 StopCoroutine(checkRightControllerReadyRoutine);
             }
 
-#pragma warning disable 618
-            if (_instance == this && !persistOnLoad)
-#pragma warning restore 618
+            if (_instance == this)
             {
                 UnloadSDKSetup();
             }
@@ -900,9 +892,7 @@ namespace VRTK
                 _instance = this;
                 VRTK_SDK_Bridge.InvalidateCaches();
 
-#pragma warning disable 618
-                if (persistOnLoad && Application.isPlaying)
-#pragma warning restore 618
+                if (Application.isPlaying)
                 {
                     DontDestroyOnLoad(gameObject);
                 }

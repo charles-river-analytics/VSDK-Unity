@@ -4,6 +4,7 @@ namespace VRTK
     using UnityEngine;
     using UnityEngine.EventSystems;
     using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Event Payload
@@ -13,7 +14,7 @@ namespace VRTK
     /// <param name="currentTarget">The current UI element that the pointer is colliding with.</param>
     /// <param name="previousTarget">The previous UI element that the pointer was colliding with.</param>
     /// <param name="raycastResult">The raw raycast result of the UI ray collision.</param>
-    public struct UIPointerEventArgs
+    public class UIPointerEventArgs : EventArgs
     {
         public VRTK_ControllerReference controllerReference;
         public bool isActive;
@@ -112,15 +113,6 @@ namespace VRTK
         public VRTK_ControllerEvents controllerEvents;
         [Tooltip("A custom transform to use as the origin of the pointer. If no pointer origin transform is provided then the transform the script is attached to is used.")]
         public Transform customOrigin = null;
-
-        [Header("Obsolete Settings")]
-
-        [System.Obsolete("`VRTK_UIPointer.controller` has been replaced with `VRTK_UIPointer.controllerEvents`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public VRTK_ControllerEvents controller;
-        [System.Obsolete("`VRTK_UIPointer.pointerOriginTransform` has been replaced with `VRTK_UIPointer.customOrigin`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public Transform pointerOriginTransform = null;
 
         [HideInInspector]
         public PointerEventData pointerEventData;
@@ -304,13 +296,14 @@ namespace VRTK
 
         public virtual UIPointerEventArgs SetUIPointerEvent(RaycastResult currentRaycastResult, GameObject currentTarget, GameObject lastTarget = null)
         {
-            UIPointerEventArgs e;
-            e.controllerReference = GetControllerReference();
-            e.isActive = PointerActive();
-            e.currentTarget = currentTarget;
-            e.previousTarget = lastTarget;
-            e.raycastResult = currentRaycastResult;
-            return e;
+            return new UIPointerEventArgs
+            {
+                controllerReference = GetControllerReference(),
+                isActive = PointerActive(),
+                currentTarget = currentTarget,
+                previousTarget = lastTarget,
+                raycastResult = currentRaycastResult
+            };
         }
 
         /// <summary>
@@ -439,10 +432,6 @@ namespace VRTK
 
         protected virtual void OnEnable()
         {
-#pragma warning disable 0618
-            controllerEvents = (controller != null && controllerEvents == null ? controller : controllerEvents);
-            customOrigin = (pointerOriginTransform != null && customOrigin == null ? pointerOriginTransform : customOrigin);
-#pragma warning restore 0618
             attachedTo = (attachedTo == null ? gameObject : attachedTo);
             controllerEvents = (controllerEvents != null ? controllerEvents : GetComponentInParent<VRTK_ControllerEvents>());
             ConfigureEventSystem();

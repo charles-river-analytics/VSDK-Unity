@@ -25,18 +25,6 @@ namespace VRTK.SecondaryControllerGrabActions
         [Tooltip("If checked all the axes will be scaled together (unless locked)")]
         public bool uniformScaling = false;
 
-        [Header("Obsolete Settings")]
-
-        [System.Obsolete("`VRTK_AxisScaleGrabAction.lockXAxis` has been replaced with the `VRTK_AxisScaleGrabAction.lockAxis`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public bool lockXAxis = false;
-        [System.Obsolete("`VRTK_AxisScaleGrabAction.lockYAxis` has been replaced with the `VRTK_AxisScaleGrabAction.lockAxis`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public bool lockYAxis = false;
-        [System.Obsolete("`VRTK_AxisScaleGrabAction.lockZAxis` has been replaced with the `VRTK_AxisScaleGrabAction.lockAxis`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public bool lockZAxis = false;
-
         protected Vector3 initialScale;
         protected float initalLength;
         protected float initialScaleFactor;
@@ -55,13 +43,6 @@ namespace VRTK.SecondaryControllerGrabActions
             initialScale = currentGrabbdObject.transform.localScale;
             initalLength = (grabbedObject.transform.position - secondaryGrabbingObject.transform.position).magnitude;
             initialScaleFactor = currentGrabbdObject.transform.localScale.x / initalLength;
-
-#pragma warning disable 618
-            if ((lockXAxis || lockYAxis || lockZAxis) && lockAxis == Vector3State.False)
-            {
-                lockAxis = new Vector3State(lockXAxis, lockYAxis, lockZAxis);
-            }
-#pragma warning restore 618
         }
 
         /// <summary>

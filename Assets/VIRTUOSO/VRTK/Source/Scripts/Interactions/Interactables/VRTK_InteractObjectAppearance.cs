@@ -4,6 +4,7 @@ namespace VRTK
     using UnityEngine;
     using System.Collections;
     using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Event Payload
@@ -11,7 +12,7 @@ namespace VRTK
     /// <param name="affectingObject">The GameObject that is being affected.</param>
     /// <param name="monitoringObject">The Interactable Object that is being monitored.</param>
     /// <param name="interactionType">The type of interaction initiating the event.</param>
-    public struct InteractObjectAppearanceEventArgs
+    public class InteractObjectAppearanceEventArgs : EventArgs
     {
         public GameObject affectingObject;
         public GameObject objectToIgnore;
@@ -256,12 +257,13 @@ namespace VRTK
 
         protected virtual InteractObjectAppearanceEventArgs SetPayload(GameObject affectingObject, VRTK_InteractableObject.InteractionType interactionType)
         {
-            InteractObjectAppearanceEventArgs e;
-            e.affectingObject = affectingObject;
-            e.monitoringObject = objectToMonitor;
-            e.objectToIgnore = ObjectToIgnore();
-            e.interactionType = interactionType;
-            return e;
+            return new InteractObjectAppearanceEventArgs
+            {
+                affectingObject = affectingObject,
+                monitoringObject = objectToMonitor,
+                objectToIgnore = ObjectToIgnore(),
+                interactionType = interactionType
+            };
         }
 
         protected virtual void RestoreDefaults()

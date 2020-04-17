@@ -1,11 +1,12 @@
 ﻿namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
     /// This class is a data structure for VRTK Tracked Object events (just index changes at this time).
     /// </summary>
-    public struct VRTKTrackedObjectEventArgs
+    public class VRTKTrackedObjectEventArgs : EventArgs
     {
         public uint currentIndex;
         public uint previousIndex;
@@ -58,10 +59,11 @@
 
         protected virtual VRTKTrackedObjectEventArgs SetEventPayload(uint previousIndex = uint.MaxValue)
         {
-            VRTKTrackedObjectEventArgs e;
-            e.currentIndex = index;
-            e.previousIndex = previousIndex;
-            return e;
+            return new VRTKTrackedObjectEventArgs
+            {
+                currentIndex = index,
+                previousIndex = previousIndex
+            };
         }
 
         protected virtual void Awake()

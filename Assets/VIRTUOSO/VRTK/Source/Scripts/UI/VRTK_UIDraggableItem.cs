@@ -1,6 +1,7 @@
 ﻿// UI Draggable Item|UI|80030
 namespace VRTK
 {
+    using System;
     using UnityEngine;
     using UnityEngine.EventSystems;
 
@@ -8,7 +9,7 @@ namespace VRTK
     /// Event Payload
     /// </summary>
     /// <param name="target">The target the item is dragged onto.</param>
-    public struct UIDraggableItemEventArgs
+    public class UIDraggableItemEventArgs : EventArgs
     {
         public GameObject target;
     }
@@ -201,9 +202,10 @@ namespace VRTK
 
         protected virtual UIDraggableItemEventArgs SetEventPayload(GameObject target)
         {
-            UIDraggableItemEventArgs e;
-            e.target = target;
-            return e;
+            return new UIDraggableItemEventArgs
+            {
+                target = target
+            };
         }
     }
 }

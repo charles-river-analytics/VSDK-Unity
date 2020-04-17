@@ -1,8 +1,9 @@
 ﻿namespace VRTK
 {
+    using System;
     using UnityEngine;
 
-    public struct CollisionTrackerEventArgs
+    public class CollisionTrackerEventArgs : EventArgs
     {
         public bool isTrigger;
         public Collision collision;
@@ -100,11 +101,12 @@
 
         protected virtual CollisionTrackerEventArgs SetCollisionTrackerEvent(bool isTrigger, Collision givenCollision, Collider givenCollider)
         {
-            CollisionTrackerEventArgs e;
-            e.isTrigger = isTrigger;
-            e.collision = givenCollision;
-            e.collider = givenCollider;
-            return e;
+            return new CollisionTrackerEventArgs
+            {
+                isTrigger = isTrigger,
+                collision = givenCollision,
+                collider = givenCollider
+            };
         }
     }
 }

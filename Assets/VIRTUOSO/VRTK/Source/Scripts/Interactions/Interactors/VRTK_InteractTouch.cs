@@ -3,13 +3,14 @@ namespace VRTK
 {
     using UnityEngine;
     using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="controllerReference">The reference to the controller doing the interaction.</param>
     /// <param name="target">The GameObject of the Interactable Object that is being interacted with.</param>
-    public struct ObjectInteractEventArgs
+    public class ObjectInteractEventArgs : EventArgs
     {
         public VRTK_ControllerReference controllerReference;
         public GameObject target;
@@ -135,10 +136,11 @@ namespace VRTK
 
         public virtual ObjectInteractEventArgs SetControllerInteractEvent(GameObject target)
         {
-            ObjectInteractEventArgs e;
-            e.controllerReference = controllerReference;
-            e.target = target;
-            return e;
+            return new ObjectInteractEventArgs
+            {
+                controllerReference = controllerReference,
+                target = target
+            };
         }
 
         /// <summary>
@@ -385,18 +387,8 @@ namespace VRTK
         protected virtual void ToggleControllerVisibility(bool visible)
         {
             GameObject modelContainer = VRTK_DeviceFinder.GetModelAliasController(gameObject);
-            if (touchedObject != null)
-            {
-                ///[Obsolete]
-#pragma warning disable 0618
-                VRTK_InteractControllerAppearance[] controllerAppearanceScript = touchedObject.GetComponentsInParent<VRTK_InteractControllerAppearance>(true);
-#pragma warning restore 0618
-                if (controllerAppearanceScript.Length > 0)
-                {
-                    controllerAppearanceScript[0].ToggleControllerOnTouch(visible, modelContainer, touchedObject);
-                }
-            }
-            else if (visible)
+
+            if (visible)
             {
                 VRTK_ObjectAppearance.SetRendererVisible(modelContainer, touchedObject);
             }
@@ -477,7 +469,7 @@ namespace VRTK
             {
                 return;
             }
-            Object defaultColliderPrefab = Resources.Load(colliderPath);
+            UnityEngine.Object defaultColliderPrefab = Resources.Load(colliderPath);
 
             if (customColliderContainer == null)
             {
