@@ -2,8 +2,9 @@
 {
     using UnityEngine;
     using System.Collections;
+    using System;
 
-    public struct VRTKTrackedControllerEventArgs
+    public class VRTKTrackedControllerEventArgs : EventArgs
     {
         public uint currentIndex;
         public uint previousIndex;
@@ -73,10 +74,11 @@
 
         protected virtual VRTKTrackedControllerEventArgs SetEventPayload(uint previousIndex = uint.MaxValue)
         {
-            VRTKTrackedControllerEventArgs e;
-            e.currentIndex = index;
-            e.previousIndex = previousIndex;
-            return e;
+            return new VRTKTrackedControllerEventArgs
+            {
+                currentIndex = index,
+                previousIndex = previousIndex
+            };
         }
 
         protected virtual void Awake()

@@ -1,6 +1,7 @@
 ﻿// Object Control|Locomotion|20060
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
@@ -13,7 +14,7 @@ namespace VRTK
     /// <param name="deadzone">The value of the deadzone based across the axis direction.</param>
     /// <param name="currentlyFalling">Whether the controlled GameObject is currently falling.</param>
     /// <param name="modifierActive">Whether the modifier button is pressed.</param>
-    public struct ObjectControlEventArgs
+    public class ObjectControlEventArgs : EventArgs
     {
         public GameObject controlledGameObject;
         public Transform directionDevice;
@@ -175,16 +176,16 @@ namespace VRTK
 
         protected virtual ObjectControlEventArgs SetEventArguements(Vector3 axisDirection, float axis, float axisDeadzone)
         {
-            ObjectControlEventArgs e;
-            e.controlledGameObject = controlledGameObject;
-            e.directionDevice = directionDevice;
-            e.axisDirection = axisDirection;
-            e.axis = axis;
-            e.deadzone = axisDeadzone;
-            e.currentlyFalling = currentlyFalling;
-            e.modifierActive = modifierActive;
-
-            return e;
+            return new ObjectControlEventArgs
+            {
+                controlledGameObject = controlledGameObject,
+                directionDevice = directionDevice,
+                axisDirection = axisDirection,
+                axis = axis,
+                deadzone = axisDeadzone,
+                currentlyFalling = currentlyFalling,
+                modifierActive = modifierActive
+            };
         }
 
         protected virtual void SetControlledObject()

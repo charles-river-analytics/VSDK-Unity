@@ -1,6 +1,7 @@
 ﻿// Headset Fade|Presence|70020
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
@@ -8,7 +9,7 @@ namespace VRTK
     /// </summary>
     /// <param name="timeTillComplete">A float that is the duration for the fade/unfade process has remaining.</param>
     /// <param name="currentTransform">The current Transform of the object that the Headset Fade script is attached to (Camera).</param>
-    public struct HeadsetFadeEventArgs
+    public class HeadsetFadeEventArgs : EventArgs
     {
         public float timeTillComplete;
         public Transform currentTransform;
@@ -155,10 +156,11 @@ namespace VRTK
 
         protected virtual HeadsetFadeEventArgs SetHeadsetFadeEvent(Transform currentTransform, float duration)
         {
-            HeadsetFadeEventArgs e;
-            e.timeTillComplete = duration;
-            e.currentTransform = currentTransform;
-            return e;
+            return new HeadsetFadeEventArgs
+            {
+                timeTillComplete = duration,
+                currentTransform = currentTransform
+            };
         }
 
         protected virtual void FadeComplete()

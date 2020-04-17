@@ -57,7 +57,7 @@ namespace VRTK
         /// <param name="previousSetup">The previous loaded Setup. `null` if no previous Setup was loaded.</param>
         /// <param name="currentSetup">The current loaded Setup. `null` if no Setup is loaded anymore. See `errorMessage` to check whether this is `null` because of an error.</param>
         /// <param name="errorMessage">Explains why loading a list of Setups wasn't successful if `currentSetup` is `null` and an error occurred. `null` if no error occurred.</param>
-        public struct LoadedSetupChangeEventArgs
+        public class LoadedSetupChangeEventArgs : EventArgs
         {
             public readonly VRTK_SDKSetup previousSetup;
             public readonly VRTK_SDKSetup currentSetup;

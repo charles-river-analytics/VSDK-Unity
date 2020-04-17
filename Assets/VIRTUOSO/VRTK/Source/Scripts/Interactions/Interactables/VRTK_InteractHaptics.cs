@@ -1,13 +1,14 @@
 ﻿// Interact Haptics|Interactables|35020
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="controllerReference">The reference to the controller to perform haptics on.</param>
-    public struct InteractHapticsEventArgs
+    public class InteractHapticsEventArgs : EventArgs
     {
         public VRTK_ControllerReference controllerReference;
     }
@@ -295,9 +296,10 @@ namespace VRTK
 
         protected virtual InteractHapticsEventArgs SetEventPayload(VRTK_ControllerReference givenControllerReference)
         {
-            InteractHapticsEventArgs e;
-            e.controllerReference = givenControllerReference;
-            return e;
+            return new InteractHapticsEventArgs
+            {
+                controllerReference = givenControllerReference
+            };
         }
 
         protected virtual void NearTouchHaptics(object sender, InteractableObjectEventArgs e)

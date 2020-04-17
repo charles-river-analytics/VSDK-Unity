@@ -1,13 +1,14 @@
 ﻿// Controller Tooltips|Prefabs|0070
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="element">The tooltip element being affected.</param>
-    public struct ControllerTooltipsEventArgs
+    public class ControllerTooltipsEventArgs : EventArgs
     {
         public VRTK_ControllerTooltips.TooltipButtons element;
     }
@@ -240,10 +241,13 @@ namespace VRTK
             VRTK_SDKManager.AttemptRemoveBehaviourToToggleOnLoadedSetupChange(this);
         }
 
-        protected virtual void EmitEvent(bool state, TooltipButtons element)
+        protected virtual void EmitEvent(bool state, TooltipButtons tooltipElement)
         {
-            ControllerTooltipsEventArgs e;
-            e.element = element;
+            ControllerTooltipsEventArgs e = new ControllerTooltipsEventArgs
+            {
+                element = tooltipElement
+            };
+            
             if (state)
             {
                 OnControllerTooltipOn(e);

@@ -4,6 +4,7 @@ namespace VRTK
     using UnityEngine;
     using UnityEngine.EventSystems;
     using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Event Payload
@@ -13,7 +14,7 @@ namespace VRTK
     /// <param name="currentTarget">The current UI element that the pointer is colliding with.</param>
     /// <param name="previousTarget">The previous UI element that the pointer was colliding with.</param>
     /// <param name="raycastResult">The raw raycast result of the UI ray collision.</param>
-    public struct UIPointerEventArgs
+    public class UIPointerEventArgs : EventArgs
     {
         public VRTK_ControllerReference controllerReference;
         public bool isActive;
@@ -295,13 +296,14 @@ namespace VRTK
 
         public virtual UIPointerEventArgs SetUIPointerEvent(RaycastResult currentRaycastResult, GameObject currentTarget, GameObject lastTarget = null)
         {
-            UIPointerEventArgs e;
-            e.controllerReference = GetControllerReference();
-            e.isActive = PointerActive();
-            e.currentTarget = currentTarget;
-            e.previousTarget = lastTarget;
-            e.raycastResult = currentRaycastResult;
-            return e;
+            return new UIPointerEventArgs
+            {
+                controllerReference = GetControllerReference(),
+                isActive = PointerActive(),
+                currentTarget = currentTarget,
+                previousTarget = lastTarget,
+                raycastResult = currentRaycastResult
+            };
         }
 
         /// <summary>

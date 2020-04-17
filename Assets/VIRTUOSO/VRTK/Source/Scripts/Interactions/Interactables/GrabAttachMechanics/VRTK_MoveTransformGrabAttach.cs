@@ -3,6 +3,7 @@ namespace VRTK.GrabAttachMechanics
 {
     using UnityEngine;
     using System.Collections;
+    using System;
 
     /// <summary>
     /// Event Payload
@@ -12,7 +13,7 @@ namespace VRTK.GrabAttachMechanics
     /// <param name="normalizedPosition">The normalized position (between `0f` and `1f`) of the Interactable Object in relation to the axis limits.</param>
     /// <param name="currentDirection">The direction vector that the Interactable Object is currently moving across the axes in.</param>
     /// <param name="originDirection">The direction vector that the Interactable Object is currently moving across the axes in in relation to the origin position.</param>
-    public struct MoveTransformGrabAttachEventArgs
+    public class MoveTransformGrabAttachEventArgs : EventArgs
     {
         public GameObject interactingObject;
         public Vector3 position;
@@ -374,7 +375,7 @@ namespace VRTK.GrabAttachMechanics
         /// <param name="speed">The speed in which to move the Interactable Object.</param>
         public virtual void SetCurrentPosition(Vector3 newPosition, float speed)
         {
-            if(speed > 0f)
+            if (speed > 0f)
             {
                 CancelResetPosition();
                 resetPositionRoutine = StartCoroutine(MoveToPosition(newPosition, speed));
@@ -598,13 +599,14 @@ namespace VRTK.GrabAttachMechanics
 
         protected virtual MoveTransformGrabAttachEventArgs SetEventPayload()
         {
-            MoveTransformGrabAttachEventArgs e;
-            e.interactingObject = (grabbedObjectScript != null ? grabbedObjectScript.GetGrabbingObject() : null);
-            e.position = GetPosition();
-            e.normalizedPosition = GetNormalizedPosition();
-            e.currentDirection = GetCurrentDirection();
-            e.originDirection = GetDirectionFromOrigin();
-            return e;
+            return new MoveTransformGrabAttachEventArgs
+            {
+                interactingObject = (grabbedObjectScript != null ? grabbedObjectScript.GetGrabbingObject() : null),
+                position = GetPosition(),
+                normalizedPosition = GetNormalizedPosition(),
+                currentDirection = GetCurrentDirection(),
+                originDirection = GetDirectionFromOrigin()
+            };
         }
     }
 }

@@ -3,6 +3,7 @@ namespace VRTK
 {
     using UnityEngine;
     using Highlighters;
+    using System;
 
     /// <summary>
     /// Event Payload
@@ -12,7 +13,7 @@ namespace VRTK
     /// <param name="affectingObject">The GameObject is initiating the highlight via an interaction.</param>
     /// <param name="objectToMonitor">The Interactable Object that is being interacted with.</param>
     /// <param name="affectedObject">The GameObject that is being highlighted.</param>
-    public struct InteractObjectHighlighterEventArgs
+    public class InteractObjectHighlighterEventArgs : EventArgs
     {
         public VRTK_InteractableObject.InteractionType interactionType;
         public Color highlightColor;
@@ -215,13 +216,15 @@ namespace VRTK
         protected virtual InteractObjectHighlighterEventArgs SetEventArgs(VRTK_InteractableObject.InteractionType interactionType, GameObject affectingObject)
         {
             currentAffectingObject = affectingObject;
-            InteractObjectHighlighterEventArgs e;
-            e.interactionType = interactionType;
-            e.highlightColor = currentColour;
-            e.affectingObject = affectingObject;
-            e.objectToMonitor = objectToMonitor;
-            e.affectedObject = objectToHighlight;
-            return e;
+
+            return new InteractObjectHighlighterEventArgs
+            {
+                interactionType = interactionType,
+                highlightColor = currentColour,
+                affectingObject = affectingObject,
+                objectToMonitor = objectToMonitor,
+                affectedObject = objectToHighlight
+            };
         }
 
         protected virtual void NearTouchHighlightObject(object sender, InteractableObjectEventArgs e)

@@ -3,6 +3,7 @@ namespace VRTK.Controllables
 {
     using UnityEngine;
     using System.Collections;
+    using System;
 
     /// <summary>
     /// Event Payload
@@ -11,7 +12,7 @@ namespace VRTK.Controllables
     /// <param name="interactingTouchScript">The optional Interact Touch script that is initiating the interaction.</param>
     /// <param name="value">The current value being reported by the controllable.</param>
     /// <param name="normalizedValue">The normalized value being reported by the controllable.</param>
-    public struct ControllableEventArgs
+    public class ControllableEventArgs : EventArgs
     {
         public Collider interactingCollider;
         public VRTK_InteractTouch interactingTouchScript;
@@ -347,12 +348,13 @@ namespace VRTK.Controllables
 
         protected virtual ControllableEventArgs EventPayload()
         {
-            ControllableEventArgs e;
-            e.interactingCollider = interactingCollider;
-            e.interactingTouchScript = interactingTouchScript;
-            e.value = GetValue();
-            e.normalizedValue = GetNormalizedValue();
-            return e;
+            return new ControllableEventArgs
+            {
+                interactingCollider = interactingCollider,
+                interactingTouchScript = interactingTouchScript,
+                value = GetValue(),
+                normalizedValue = GetNormalizedValue()
+            };
         }
     }
 }

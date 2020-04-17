@@ -3,13 +3,14 @@ namespace VRTK.GrabAttachMechanics
 {
     using UnityEngine;
     using System.Collections;
+    using System;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="interactingObject">The GameObject that is performing the interaction (e.g. a controller).</param>
     /// <param name="currentFrame">The current frame the animation is on.</param>
-    public struct ControlAnimationGrabAttachEventArgs
+    public class ControlAnimationGrabAttachEventArgs : EventArgs
     {
         public GameObject interactingObject;
         public float currentFrame;
@@ -280,10 +281,11 @@ namespace VRTK.GrabAttachMechanics
 
         protected virtual ControlAnimationGrabAttachEventArgs SetEventPayload(float frame)
         {
-            ControlAnimationGrabAttachEventArgs e;
-            e.interactingObject = (grabbedObjectScript != null ? grabbedObjectScript.GetGrabbingObject() : null);
-            e.currentFrame = frame;
-            return e;
+            return new ControlAnimationGrabAttachEventArgs
+            {
+                interactingObject = (grabbedObjectScript != null ? grabbedObjectScript.GetGrabbingObject() : null),
+                currentFrame = frame
+            };
         }
     }
 }

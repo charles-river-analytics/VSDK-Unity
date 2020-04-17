@@ -1,6 +1,7 @@
 ﻿// Object Tooltip|Prefabs|0060
 namespace VRTK
 {
+    using System;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -8,7 +9,7 @@ namespace VRTK
     /// Event Payload
     /// </summary>
     /// <param name="newText">The optional new text that is given to the tooltip.</param>
-    public struct ObjectTooltipEventArgs
+    public class ObjectTooltipEventArgs : EventArgs
     {
         public string newText;
     }
@@ -134,11 +135,12 @@ namespace VRTK
             }
         }
 
-        protected virtual ObjectTooltipEventArgs SetEventPayload(string newText = "")
+        protected virtual ObjectTooltipEventArgs SetEventPayload(string givenText = "")
         {
-            ObjectTooltipEventArgs e;
-            e.newText = newText;
-            return e;
+            return new ObjectTooltipEventArgs
+            {
+                newText = givenText
+            };
         }
 
         protected virtual void SetContainer()

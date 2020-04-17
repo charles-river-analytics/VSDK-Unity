@@ -3,13 +3,14 @@ namespace VRTK
 {
     using UnityEngine;
     using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="controllerReference">The reference to the controller doing the interaction.</param>
     /// <param name="target">The GameObject of the Interactable Object that is being interacted with.</param>
-    public struct ObjectInteractEventArgs
+    public class ObjectInteractEventArgs : EventArgs
     {
         public VRTK_ControllerReference controllerReference;
         public GameObject target;
@@ -135,10 +136,11 @@ namespace VRTK
 
         public virtual ObjectInteractEventArgs SetControllerInteractEvent(GameObject target)
         {
-            ObjectInteractEventArgs e;
-            e.controllerReference = controllerReference;
-            e.target = target;
-            return e;
+            return new ObjectInteractEventArgs
+            {
+                controllerReference = controllerReference,
+                target = target
+            };
         }
 
         /// <summary>
@@ -467,7 +469,7 @@ namespace VRTK
             {
                 return;
             }
-            Object defaultColliderPrefab = Resources.Load(colliderPath);
+            UnityEngine.Object defaultColliderPrefab = Resources.Load(colliderPath);
 
             if (customColliderContainer == null)
             {

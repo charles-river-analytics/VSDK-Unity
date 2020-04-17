@@ -1,6 +1,7 @@
 ﻿// Destination Marker|Pointers|10010
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
@@ -14,7 +15,7 @@ namespace VRTK
     /// <param name="forceDestinationPosition">If true then the given destination position should not be altered by anything consuming the payload.</param>
     /// <param name="enableTeleport">Whether the destination set event should trigger teleport.</param>
     /// <param name="controllerReference">The optional reference to the controller controlling the destination marker.</param>
-    public struct DestinationMarkerEventArgs
+    public class DestinationMarkerEventArgs : EventArgs
     {
         public float distance;
         public Transform target;
@@ -148,16 +149,17 @@ namespace VRTK
 
         protected virtual DestinationMarkerEventArgs SetDestinationMarkerEvent(float distance, Transform target, RaycastHit raycastHit, Vector3 position, VRTK_ControllerReference controllerReference, bool forceDestinationPosition = false, Quaternion? rotation = null)
         {
-            DestinationMarkerEventArgs e;
-            e.controllerReference = controllerReference;
-            e.distance = distance;
-            e.target = target;
-            e.raycastHit = raycastHit;
-            e.destinationPosition = position;
-            e.destinationRotation = rotation;
-            e.enableTeleport = enableTeleport;
-            e.forceDestinationPosition = forceDestinationPosition;
-            return e;
+            return new DestinationMarkerEventArgs
+            {
+                controllerReference = controllerReference,
+                distance = distance,
+                target = target,
+                raycastHit = raycastHit,
+                destinationPosition = position,
+                destinationRotation = rotation,
+                enableTeleport = enableTeleport,
+                forceDestinationPosition = forceDestinationPosition
+            };
         }
     }
 }

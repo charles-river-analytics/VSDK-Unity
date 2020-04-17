@@ -1,6 +1,7 @@
 ﻿// Position Rewind|Presence|70070
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
@@ -8,7 +9,7 @@ namespace VRTK
     /// </summary>
     /// <param name="collidedPosition">The position of the play area when it collded.</param>
     /// <param name="resetPosition">The position of the play area when it has been rewinded to a safe position.</param>
-    public struct PositionRewindEventArgs
+    public class PositionRewindEventArgs : EventArgs
     {
         public Vector3 collidedPosition;
         public Vector3 resetPosition;
@@ -183,10 +184,11 @@ namespace VRTK
 
         protected virtual PositionRewindEventArgs SetEventPayload(Vector3 previousPosition)
         {
-            PositionRewindEventArgs e;
-            e.collidedPosition = previousPosition;
-            e.resetPosition = playArea.position;
-            return e;
+            return new PositionRewindEventArgs
+            {
+                collidedPosition = previousPosition,
+                resetPosition = playArea.position
+            };
         }
 
         protected virtual bool CrouchThresholdReached()

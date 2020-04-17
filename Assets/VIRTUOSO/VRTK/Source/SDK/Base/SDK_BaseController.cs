@@ -3,8 +3,9 @@ namespace VRTK
 {
     using UnityEngine;
     using System.Collections.Generic;
+    using System;
 
-    public struct VRTKSDKBaseControllerEventArgs
+    public class VRTKSDKBaseControllerEventArgs : EventArgs
     {
         public VRTK_ControllerReference controllerReference;
     }
@@ -252,8 +253,10 @@ namespace VRTK
 
         public virtual void OnControllerReady(ControllerHand hand)
         {
-            VRTKSDKBaseControllerEventArgs e;
-            e.controllerReference = VRTK_ControllerReference.GetControllerReference(hand);
+            VRTKSDKBaseControllerEventArgs e = new VRTKSDKBaseControllerEventArgs
+            {
+                controllerReference = VRTK_ControllerReference.GetControllerReference(hand)
+            };
 
             switch (hand)
             {
@@ -599,8 +602,10 @@ namespace VRTK
 
         protected virtual void OnControllerModelReady(ControllerHand hand, VRTK_ControllerReference controllerReference)
         {
-            VRTKSDKBaseControllerEventArgs e;
-            e.controllerReference = controllerReference;
+            VRTKSDKBaseControllerEventArgs e = new VRTKSDKBaseControllerEventArgs
+            {
+                controllerReference = controllerReference
+            };
 
             switch (hand)
             {
