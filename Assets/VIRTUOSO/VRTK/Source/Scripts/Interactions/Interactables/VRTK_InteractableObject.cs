@@ -8,6 +8,7 @@ namespace VRTK
     using GrabAttachMechanics;
     using SecondaryControllerGrabActions;
     using CharlesRiverAnalytics.Virtuoso.InteractionAreas;
+    using CharlesRiverAnalytics.Virtuoso.Events;
 
     /// <summary>
     /// Event Payload
@@ -144,6 +145,8 @@ namespace VRTK
             /// </summary>
             DropValidInteractionArea
         }
+
+        public EventBusHierarchy objectHierarchy = new EventBusHierarchy("Interactable Object");
 
         [Header("General Settings")]
 
