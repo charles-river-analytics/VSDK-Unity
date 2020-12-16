@@ -7,7 +7,9 @@ using UnityEngine;
 namespace CharlesRiverAnalytics.Virtuoso.Events
 {
     /// <summary>
-    /// TODO
+    /// Styles the EventBusEndpoint component to use a reorderable list for the reaction list.
+    /// 
+    /// TODO Make the hierarchy and event inputs become dropdown menus instead of strings
     /// 
     /// Written by: Nicolas Herrera (nherrera@cra.com), Apr 2020
     /// </summary>
@@ -39,20 +41,15 @@ namespace CharlesRiverAnalytics.Virtuoso.Events
             {
                 var element = reorderableReactionList.serializedProperty.GetArrayElementAtIndex(index);
                 
-                EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("reaction"), GUIContent.none);
+                EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width / 2, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("reaction"), GUIContent.none);
 
-                EditorGUI.PropertyField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight, rect.width, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("fireMethod"), GUIContent.none);
+                EditorGUI.PropertyField(new Rect(rect.x + rect.width / 2, rect.y, rect.width / 2, EditorGUIUtility.singleLineHeight), element.FindPropertyRelative("fireMethod"), GUIContent.none);
             };
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-
-            if(GUILayout.Button("Refresh Hierarchy"))
-            {
-                // TODO How to find all property drawers in scene?
-            }
 
             hierarchyString.stringValue = EditorGUILayout.TextField("Hierarchy", hierarchyString.stringValue);
             eventString.stringValue = EditorGUILayout.TextField("Event", eventString.stringValue);

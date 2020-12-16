@@ -7,7 +7,8 @@ using UnityEngine;
 namespace CharlesRiverAnalytics.Virtuoso.Events
 {
     /// <summary>
-    /// TODO
+    /// The component that holds the logic between the object that needs to be fired, the event to fire 
+    /// the reaction on, and the list of reactions to be fired.
     /// 
     /// Written by: Nicolas Herrera (nherrera@cra.com), Apr 2020
     /// </summary>
@@ -52,7 +53,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Events
 
         protected void OnDisable()
         {
-            // TODO unsubscribe? What if similiar 
+            EventBus.Instance?.UnsubscribeToEvent(this, hierarchyString, eventString);
         }
 
         #endregion
@@ -62,7 +63,6 @@ namespace CharlesRiverAnalytics.Virtuoso.Events
     public struct ReactionFireInfo
     {
         public GenericReaction reaction;
-        // TODO If HideMethodAttribute is used, it will be ignored. Make custom Property drawer?
         public Utilities.Constants.ReactionFireMethods fireMethod;
     }
 }

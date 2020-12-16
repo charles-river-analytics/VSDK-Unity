@@ -11,31 +11,46 @@ namespace CharlesRiverAnalytics.Virtuoso.Reaction
     public class ColorChangeReaction : GenericReaction
     {
         #region PublicVariables
+
         public Color startColorToChangeTo = Color.blue;
         public Color endColorToChangeTo = Color.blue;
+
         #endregion
 
         #region ProtectedVariables
-        protected Material materialToChange;
-        #endregion
 
-        #region UnityFunctions
-        public void Awake()
-        {
-            materialToChange = GetComponent<Renderer>().material;
-        }
+        protected Material materialToChange;
+
         #endregion
 
         #region ReactionEventImplementation
+
         public override void StartReaction(object o, EventArgs e)
         {
-            materialToChange.color = startColorToChangeTo;
+            if(target)
+            {
+                materialToChange = target.GetComponent<Renderer>().material;
+            }
+            else
+            {
+                materialToChange = (o as GameObject)?.GetComponent<Renderer>().material;
+            }
+            
+
+            if (materialToChange != null)
+            {
+                materialToChange.color = startColorToChangeTo;
+            }
         }
 
         public override void StopReaction(object o, EventArgs e)
         {
-            materialToChange.color = endColorToChangeTo;
+            if (materialToChange != null)
+            {
+                materialToChange.color = endColorToChangeTo;
+            }
         }
+
         #endregion
     }
 }

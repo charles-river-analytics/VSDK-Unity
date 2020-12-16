@@ -8,20 +8,15 @@ using UnityEngine;
 namespace CharlesRiverAnalytics.Virtuoso.Events
 {
     /// <summary>
-    /// TODO
+    /// The EventBusSender class is a component that allows all the public events on all other components
+    /// attached to the same GameObject to be sent to the EventBus system for the reaction system. To use,
+    /// simply attach to the GameObject with events you want to fire.
     /// 
     /// Written by: Nicolas Herrera (nherrera@cra.com), Apr 2020
     /// </summary>
     [DisallowMultipleComponent]
     public class EventBusSender : MonoBehaviour
     {
-        #region PublicVariables
-
-        //[Tooltip("The component that will send out events that will trigger the reactions to fire.")]
-        //public Component eventSender;
-
-        #endregion
-
         #region ProtectedVariables
 
         protected List<DynamicDelegate> dynamicEventList;
@@ -38,13 +33,12 @@ namespace CharlesRiverAnalytics.Virtuoso.Events
 
             var allComponents = GetComponentsInChildren<Component>(true);
 
-            foreach(var currentComponent in allComponents)
+            foreach (var currentComponent in allComponents)
             {
                 string[] eventNames = EventUtility.GetEventNameArray(currentComponent);
 
-                if(eventNames.Length > 0)
+                if (eventNames.Length > 0)
                 {
-                    Debug.Log(currentComponent + " on " + name + " has public events.");
                     componentsWithEvents.Add(currentComponent);
                 }
             }
@@ -54,7 +48,7 @@ namespace CharlesRiverAnalytics.Virtuoso.Events
         {
             if (componentsWithEvents.Count > 0)
             {
-                foreach(Component currentEventSender in componentsWithEvents)
+                foreach (Component currentEventSender in componentsWithEvents)
                 {
                     // Subscribe to all of the event sender events so you can foward them to the EventBus
                     string[] eventNames = EventUtility.GetEventNameArray(currentEventSender);
@@ -69,31 +63,9 @@ namespace CharlesRiverAnalytics.Virtuoso.Events
                             eventNames[i],
                             (sender, args) =>
                             {
-                            // Get instance of the Hierarchy
-                            string hierarchString = "";
+                                EventBusHierarchy eventBusHierarchy = currentEventSender.GetComponent<EventBusHierarchy>();
 
-                                foreach (FieldInfo property in currentEventSender.GetType().GetFields())
-                                {
-                                    if (property.FieldType == typeof(EventBusHierarchy))
-                                    {
-                                        hierarchString = ((EventBusHierarchy)property.GetValue(currentEventSender)).hierarchyValue;
-
-                                        break;
-                                    }
-                                }
-
-                            // The hierarchy wasn't established on the event sender, check the Gameobject for the mixin class
-                            if (string.IsNullOrEmpty(hierarchString))
-                                {
-                                    var t = currentEventSender.GetComponent<EventBusMixin>();
-
-                                    if (t != null)
-                                    {
-                                        hierarchString = t.objectHierarchy.hierarchyValue;
-                                    }
-                                }
-
-                                EventBus.Instance.ForwardEvent(currentEventName, hierarchString, sender, args);
+                                EventBus.Instance.ForwardEvent(currentEventName, eventBusHierarchy, sender, args);
                             },
                             currentEventSender.GetType()));
                     }
