@@ -11,9 +11,11 @@ namespace CharlesRiverAnalytics.Virtuoso.Reaction
     /// 
     /// Written by: Nicolas Herrera (nherrera@cra.com), 2018
     /// </summary>
-    [DisallowMultipleComponent]
-    public class GenericReaction : MonoBehaviour, IReaction
+    public class GenericReaction : MonoBehaviour
     {
+        [Tooltip("The intended GameObject of the reaction. If not set, reaction should default to the caller of the reaction.")]
+        public GameObject target;
+
         public virtual void StartReaction(object o, EventArgs e)
         {
             throw new NotImplementedException();

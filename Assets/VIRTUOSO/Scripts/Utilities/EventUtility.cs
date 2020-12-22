@@ -69,6 +69,48 @@ namespace CharlesRiverAnalytics.Virtuoso.Utilities
 
         /// <summary>
         /// Allows for the subscription of event when the event is not known ahead of time and must be
+        /// identified as a string with a lambda function used as the event delegate.
+        /// </summary>
+        /// <param name="listener">The instance of type T that will listen for the event.</param>
+        /// <param name="eventSpeaker">The instance of type Y that will send out the event.</param>
+        /// <param name="eventName">The string representing the name of the event.</param>
+        /// <param name="callback">The lambda expression that will act as the delegate.</param>
+        /// <param name="overrideEventSpeakerType">Null by default, if provided will use the type to find the events of the event speaker.</param>
+        /// <returns></returns>
+        public static DynamicDelegate SubscribeToEvent<T, Y>(T listener, Y eventSpeaker, string eventName, Action<object, EventArgs> callback, Type overrideEventSpeakerType = null)
+        {
+            EventInfo eventInfo;
+
+            if (overrideEventSpeakerType == null)
+            {
+                eventInfo = typeof(Y).GetEvent(eventName);
+            }
+            else
+            {
+                eventInfo = overrideEventSpeakerType.GetEvent(eventName);
+            }
+
+            if (eventInfo != null && eventInfo.EventHandlerType != null)
+            {
+                Delegate handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, callback.Target, callback.Method);
+
+                if (handler != null)
+                {
+                    eventInfo.AddEventHandler(eventSpeaker, handler);
+
+                    return new DynamicDelegate(eventInfo, eventSpeaker, handler);
+                }
+                else
+                {
+                    Debug.LogError("Could not create delegate for event " + eventName + " with lambda.");
+                }
+            }
+            
+            return null;
+        }
+
+        /// <summary>
+        /// Allows for the subscription of event when the event is not known ahead of time and must be
         /// identified as a string. Use this method when the eventSpeaker is inherited from a class and the
         /// pass variable is not of the derived class.
         /// 
