@@ -20,11 +20,11 @@ event driven behavior based on naturalistic interactions
 
 ## Getting Started
 
-VSDK has several project-focused tutorials to help get you up to speed. Tutorials for VSDK Unity can be found [on the GitHub Wiki](https://github.com/charles-river-analytics/VSDK-Unity/wiki)
+VSDK has several project-focused tutorials to help get you up to speed, on the [VSDK Unity GitHub Wiki](https://github.com/charles-river-analytics/VSDK-Unity/wiki).
 
 ## Documentation
 
-Documentation for VSDK Unity can be found on our [GitHub Wiki](https://github.com/charles-river-analytics/VSDK-Unity/wiki).
+Documentation for VSDK Unity can be found on our [VSDK Unity GitHub Wiki](https://github.com/charles-river-analytics/VSDK-Unity/wiki).
 
 ## Supported Devices
 
