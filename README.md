@@ -24,7 +24,7 @@ VSDK has several project-focused tutorials to help get you up to speed. Tutorial
 
 ## Documentation
 
-Documentation for VSDK Unity can be found on our [GitHub Wiki](https://github.com/charles-river-analytics/VSDK-Unity/wiki)
+Documentation for VSDK Unity can be found on our [GitHub Wiki](https://github.com/charles-river-analytics/VSDK-Unity/wiki).
 
 ## Supported Devices
 
