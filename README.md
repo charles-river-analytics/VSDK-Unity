@@ -1,4 +1,4 @@
-![VIRTUOSO SDK](VSDK_logo_banner.jpg)
+![VIRTUOSO SDK](VSDK_BW_logo.png)
 ## Overview
 
 The VIRTUOSO SDK (VSDK) is an XR software
