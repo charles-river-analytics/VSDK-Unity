@@ -147,39 +147,7 @@ namespace VRTK
 
         protected virtual string ScrapeHeadsetType()
         {
-            string model = CleanPropertyString(XRDevice.model);
-            string deviceName = CleanPropertyString(XRSettings.loadedDeviceName);
-            switch (model)
-            {
-                case "oculusriftcv1":
-                case "oculusriftes07":
-                    return CleanPropertyString("oculusrift");
-                case "vivemv":
-                case "vivedvt":
-                    return CleanPropertyString("htcvive");
-                case "googleinc-daydreamview":
-                    return "googledaydream";
-                case "googleinc-defaultcardboard":
-                    return "googlecardboard";
-                case "galaxynote5":
-                case "galaxys6":
-                case "galaxys6edge":
-                case "galaxys7":
-                case "galaxys7edge":
-                case "galaxys8":
-                case "galaxys8+":
-                    if (deviceName == "oculus")
-                    {
-                        return "oculusgearvr";
-                    }
-                    break;
-                case "oculusriftdk1":
-                    return CleanPropertyString("oculusriftdk1");
-                case "oculusriftdk2":
-                    return CleanPropertyString("oculusriftdk2");
-                case "acermixedreality":
-                    return CleanPropertyString("windowsmixedreality");
-            }
+            // No longer necessary to use; will become deprecated
             return "";
         }
 
