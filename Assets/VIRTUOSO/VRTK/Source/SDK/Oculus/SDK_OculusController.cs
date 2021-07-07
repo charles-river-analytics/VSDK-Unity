@@ -105,16 +105,6 @@ namespace VRTK
                 return ControllerType.Oculus_OculusGamepad;
             }
 
-            if ((connectedControllers & OVRInput.Controller.Touchpad) == OVRInput.Controller.Touchpad)
-            {
-                return ControllerType.Oculus_GearVRHMD;
-            }
-
-            if ((connectedControllers & (OVRInput.Controller.LTrackedRemote | OVRInput.Controller.RTrackedRemote)) != 0)
-            {
-                return ControllerType.Oculus_GearVRController;
-            }
-
             return ControllerType.Undefined;
         }
 

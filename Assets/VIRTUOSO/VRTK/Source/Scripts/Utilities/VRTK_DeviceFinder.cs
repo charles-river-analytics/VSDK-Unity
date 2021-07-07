@@ -434,65 +434,6 @@ namespace VRTK
         }
 
         /// <summary>
-        /// The ResetHeadsetTypeCache resets the cache holding the current headset type value.
-        /// </summary>
-        [System.Obsolete("`VRTK_DeviceFinder.ResetHeadsetTypeCache()` has been deprecated. This method will be removed in a future version of VRTK.")]
-        public static void ResetHeadsetTypeCache()
-        {
-            cachedHeadsetType = "";
-        }
-
-        /// <summary>
-        /// The GetHeadsetType method returns the type of headset connected to the computer.
-        /// </summary>
-        /// <param name="summary">If this is `true`, then the generic name for the headset is returned not including the version type (e.g. OculusRift will be returned for DK2 and CV1).</param>
-        /// <returns>The Headset type that is connected.</returns>
-        [System.Obsolete("`VRTK_DeviceFinder.GetHeadsetType(summary) -> VRTK_DeviceFinder.Headsets` has been replaced with `VRTK_DeviceFinder.GetHeadsetType() -> SDK_BaseHeadset.HeadsetType`. This method will be removed in a future version of VRTK.")]
-        public static Headsets GetHeadsetType(bool summary = false)
-        {
-            Headsets returnValue = Headsets.Unknown;
-            cachedHeadsetType = (cachedHeadsetType == "" ? XRDevice.model.Replace(" ", "").Replace(".", "").ToLowerInvariant() : cachedHeadsetType);
-            switch (cachedHeadsetType)
-            {
-                case "oculusriftcv1":
-                    returnValue = (summary ? Headsets.OculusRift : Headsets.OculusRiftCV1);
-                    break;
-                case "oculusriftes07":
-                    returnValue = (summary ? Headsets.OculusRift : Headsets.OculusRiftES07);
-                    break;
-                case "vivemv":
-                    returnValue = (summary ? Headsets.Vive : Headsets.ViveMV);
-                    break;
-                case "vivedvt":
-                    returnValue = (summary ? Headsets.Vive : Headsets.ViveDVT);
-                    break;
-            }
-
-            if (returnValue == Headsets.Unknown)
-            {
-                VRTK_Logger.Warn(
-                    string.Format("Your headset is of type '{0}' which VRTK doesn't know about yet. Please report this headset type to the maintainers of VRTK."
-                                  + (summary ? " Falling back to a slower check to summarize the headset type now." : ""),
-                                  cachedHeadsetType)
-                );
-
-                if (summary)
-                {
-                    if (cachedHeadsetType.Contains("rift"))
-                    {
-                        return Headsets.OculusRift;
-                    }
-                    if (cachedHeadsetType.Contains("vive"))
-                    {
-                        return Headsets.Vive;
-                    }
-                }
-            }
-
-            return returnValue;
-        }
-
-        /// <summary>
         /// The GetHeadsetTypeAsString method returns a string representing the type of headset connected.
         /// </summary>
         /// <returns>The string of the headset connected.</returns>
