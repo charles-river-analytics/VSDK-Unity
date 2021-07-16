@@ -1,6 +1,7 @@
 ﻿// Headset Controller Aware|Presence|70040
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
@@ -8,7 +9,7 @@ namespace VRTK
     /// </summary>
     /// <param name="raycastHit">The Raycast Hit struct of item that is obscuring the path to the controller.</param>
     /// <param name="controllerReference">The reference to the controller that is being or has been obscured or being or has been glanced.</param>
-    public struct HeadsetControllerAwareEventArgs
+    public class HeadsetControllerAwareEventArgs : EventArgs
     {
         public RaycastHit raycastHit;
         public VRTK_ControllerReference controllerReference;
@@ -187,10 +188,11 @@ namespace VRTK
 
         protected virtual HeadsetControllerAwareEventArgs SetHeadsetControllerAwareEvent(RaycastHit raycastHit, VRTK_ControllerReference controllerReference)
         {
-            HeadsetControllerAwareEventArgs e;
-            e.raycastHit = raycastHit;
-            e.controllerReference = controllerReference;
-            return e;
+            return new HeadsetControllerAwareEventArgs
+            {
+                raycastHit = raycastHit,
+                controllerReference = controllerReference
+            };
         }
 
         protected virtual void RayCastToController(GameObject controller, Transform customDestination, ref bool obscured, ref bool lastState)

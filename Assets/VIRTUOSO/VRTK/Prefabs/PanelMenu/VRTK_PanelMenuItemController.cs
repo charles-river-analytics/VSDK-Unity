@@ -1,13 +1,14 @@
 ﻿// Panel Menu Item|Prefabs|0140
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="interactableObject">The GameObject for the interactable object the PanelMenu is attached to.</param>
-    public struct PanelMenuItemControllerEventArgs
+    public class PanelMenuItemControllerEventArgs : EventArgs
     {
         public GameObject interactableObject;
     }
@@ -117,9 +118,10 @@ namespace VRTK
         /// <returns>The payload for the event.</returns>
         public virtual PanelMenuItemControllerEventArgs SetPanelMenuItemEvent(GameObject interactableObject)
         {
-            PanelMenuItemControllerEventArgs e;
-            e.interactableObject = interactableObject;
-            return e;
+            return new PanelMenuItemControllerEventArgs
+            {
+                interactableObject = interactableObject
+            };
         }
 
         /// <summary>

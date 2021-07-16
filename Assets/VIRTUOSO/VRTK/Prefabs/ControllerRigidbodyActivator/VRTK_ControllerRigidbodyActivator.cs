@@ -1,13 +1,14 @@
 ﻿// Controller Rigidbody Activator|Prefabs|0050
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="interactingObject">The object that touching the activator.</param>
-    public struct ControllerRigidbodyActivatorEventArgs
+    public class ControllerRigidbodyActivatorEventArgs : EventArgs
     {
         public VRTK_InteractTouch touchingObject;
     }
@@ -101,8 +102,11 @@ namespace VRTK
 
         protected virtual void EmitEvent(bool state, VRTK_InteractTouch touch)
         {
-            ControllerRigidbodyActivatorEventArgs e;
-            e.touchingObject = touch;
+            ControllerRigidbodyActivatorEventArgs e = new ControllerRigidbodyActivatorEventArgs
+            {
+                touchingObject = touch
+            };
+
             if (state)
             {
                 OnControllerRigidbodyOn(e);

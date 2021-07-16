@@ -1,13 +1,14 @@
 ﻿// Controller Tooltips|Prefabs|0070
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
     /// Event Payload
     /// </summary>
     /// <param name="element">The tooltip element being affected.</param>
-    public struct ControllerTooltipsEventArgs
+    public class ControllerTooltipsEventArgs : EventArgs
     {
         public VRTK_ControllerTooltips.TooltipButtons element;
     }
@@ -98,15 +99,6 @@ namespace VRTK
         public VRTK_HeadsetControllerAware headsetControllerAware;
         [Tooltip("If this is checked then the tooltips will be hidden when the headset is not looking at the controller.")]
         public bool hideWhenNotInView = true;
-
-        [Header("Obsolete Settings")]
-
-        [System.Obsolete("`VRTK_ControllerTooltips.retryInitMaxTries` has been deprecated as tooltip initialisation now uses the `VRTK_TrackedController.ControllerModelAvailable` event.")]
-        [ObsoleteInspector]
-        public int retryInitMaxTries = 10;
-        [System.Obsolete("`VRTK_ControllerTooltips.retryInitCounter` has been deprecated as tooltip initialisation now uses the `VRTK_TrackedController.ControllerModelAvailable` event.")]
-        [ObsoleteInspector]
-        public float retryInitCounter = 0.1f;
 
         /// <summary>
         /// Emitted when the controller tooltip is turned on.
@@ -249,10 +241,13 @@ namespace VRTK
             VRTK_SDKManager.AttemptRemoveBehaviourToToggleOnLoadedSetupChange(this);
         }
 
-        protected virtual void EmitEvent(bool state, TooltipButtons element)
+        protected virtual void EmitEvent(bool state, TooltipButtons tooltipElement)
         {
-            ControllerTooltipsEventArgs e;
-            e.element = element;
+            ControllerTooltipsEventArgs e = new ControllerTooltipsEventArgs
+            {
+                element = tooltipElement
+            };
+            
             if (state)
             {
                 OnControllerTooltipOn(e);

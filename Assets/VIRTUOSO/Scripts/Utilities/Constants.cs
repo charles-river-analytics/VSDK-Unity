@@ -23,5 +23,11 @@ namespace CharlesRiverAnalytics.Virtuoso.Utilities
         }
 
         public static readonly string[] reactionTriggerMethods = { "StartReaction", "StopReaction" };
+
+        public enum ReactionFireMethods
+        {
+            StartReaction,
+            StopReaction
+        }
     }
 }

@@ -3,8 +3,9 @@ namespace VRTK
 {
     using UnityEngine;
     using System.Collections.Generic;
+    using System;
 
-    public struct VRTKSDKBaseControllerEventArgs
+    public class VRTKSDKBaseControllerEventArgs : EventArgs
     {
         public VRTK_ControllerReference controllerReference;
     }
@@ -252,8 +253,10 @@ namespace VRTK
 
         public virtual void OnControllerReady(ControllerHand hand)
         {
-            VRTKSDKBaseControllerEventArgs e;
-            e.controllerReference = VRTK_ControllerReference.GetControllerReference(hand);
+            VRTKSDKBaseControllerEventArgs e = new VRTKSDKBaseControllerEventArgs
+            {
+                controllerReference = VRTK_ControllerReference.GetControllerReference(hand)
+            };
 
             switch (hand)
             {
@@ -330,14 +333,6 @@ namespace VRTK
         /// <param name="controllerReference">The reference to the controller to retrieve the origin from.</param>
         /// <returns>A Transform containing the origin of the controller.</returns>
         public abstract Transform GetControllerOrigin(VRTK_ControllerReference controllerReference);
-
-        /// <summary>
-        /// The GenerateControllerPointerOrigin method can create a custom pointer origin Transform to represent the pointer position and forward.
-        /// </summary>
-        /// <param name="parent">The GameObject that the origin will become parent of. If it is a controller then it will also be used to determine the hand if required.</param>
-        /// <returns>A generated Transform that contains the custom pointer origin.</returns>
-        [System.Obsolete("GenerateControllerPointerOrigin has been deprecated and will be removed in a future version of VRTK.")]
-        public abstract Transform GenerateControllerPointerOrigin(GameObject parent);
 
         /// <summary>
         /// The GetControllerLeftHand method returns the GameObject containing the representation of the left hand controller.
@@ -607,8 +602,10 @@ namespace VRTK
 
         protected virtual void OnControllerModelReady(ControllerHand hand, VRTK_ControllerReference controllerReference)
         {
-            VRTKSDKBaseControllerEventArgs e;
-            e.controllerReference = controllerReference;
+            VRTKSDKBaseControllerEventArgs e = new VRTKSDKBaseControllerEventArgs
+            {
+                controllerReference = controllerReference
+            };
 
             switch (hand)
             {

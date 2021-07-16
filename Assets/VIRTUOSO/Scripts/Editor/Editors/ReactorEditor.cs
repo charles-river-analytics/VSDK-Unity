@@ -92,20 +92,6 @@ namespace CharlesRiverAnalytics.Virtuoso
 
                 Component eventSenderComponent = eventSender.objectReferenceValue as Component;
 
-                // Get the list of all reactions in the scene to display in a list
-                GenericReaction[] reactionsInScene = FindObjectsOfType<GenericReaction>();
-
-                // Check to make sure there is at least 1 reaction in scene
-                if (reactionsInScene.Length == 0)
-                {
-                    EditorGUILayout.HelpBox(NO_REACTION_WARNING_MESSAGE, MessageType.Error);
-
-                    serializedObject.ApplyModifiedProperties();
-
-                    // Since there are no reactions, don't processing the rest
-                    return;
-                }
-
                 // See if the dictionary needs to be updated with new events
                 if (eventSenderComponent != null && eventSenderComponent != lastUsedComponent.objectReferenceValue)
                 {

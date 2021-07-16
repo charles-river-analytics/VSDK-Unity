@@ -1,6 +1,7 @@
 ﻿// Destination Marker|Pointers|10010
 namespace VRTK
 {
+    using System;
     using UnityEngine;
 
     /// <summary>
@@ -14,7 +15,7 @@ namespace VRTK
     /// <param name="forceDestinationPosition">If true then the given destination position should not be altered by anything consuming the payload.</param>
     /// <param name="enableTeleport">Whether the destination set event should trigger teleport.</param>
     /// <param name="controllerReference">The optional reference to the controller controlling the destination marker.</param>
-    public struct DestinationMarkerEventArgs
+    public class DestinationMarkerEventArgs : EventArgs
     {
         public float distance;
         public Transform target;
@@ -65,9 +66,6 @@ namespace VRTK
         /// </summary>
         public event DestinationMarkerEventHandler DestinationMarkerSet;
 
-        [System.Obsolete("`VRTK_DestinationMarker.navMeshCheckDistance` is no longer used. This parameter will be removed in a future version of VRTK.")]
-        protected float navMeshCheckDistance = 0f;
-
         protected VRTK_NavMeshData navmeshData;
         protected bool headsetPositionCompensation;
         protected bool forceHoverOnRepeatedEnter = true;
@@ -113,18 +111,6 @@ namespace VRTK
         }
 
         /// <summary>
-        /// The SetNavMeshCheckDistance method sets the max distance the destination marker position can be from the edge of a nav mesh to be considered a valid destination.
-        /// </summary>
-        /// <param name="distance">The max distance the nav mesh can be from the sample point to be valid.</param>
-        [System.Obsolete("`DestinationMarker.SetNavMeshCheckDistance(distance)` has been replaced with the method `DestinationMarker.SetNavMeshCheckDistance(givenData)`. This method will be removed in a future version of VRTK.")]
-        public virtual void SetNavMeshCheckDistance(float distance)
-        {
-            VRTK_NavMeshData givenData = gameObject.AddComponent<VRTK_NavMeshData>();
-            givenData.distanceLimit = distance;
-            SetNavMeshData(givenData);
-        }
-
-        /// <summary>
         /// The SetNavMeshData method is used to limit the destination marker to the scene NavMesh based on the settings in the given NavMeshData object.
         /// </summary>
         /// <param name="givenData">The NavMeshData object that contains the NavMesh restriction settings.</param>
@@ -163,16 +149,17 @@ namespace VRTK
 
         protected virtual DestinationMarkerEventArgs SetDestinationMarkerEvent(float distance, Transform target, RaycastHit raycastHit, Vector3 position, VRTK_ControllerReference controllerReference, bool forceDestinationPosition = false, Quaternion? rotation = null)
         {
-            DestinationMarkerEventArgs e;
-            e.controllerReference = controllerReference;
-            e.distance = distance;
-            e.target = target;
-            e.raycastHit = raycastHit;
-            e.destinationPosition = position;
-            e.destinationRotation = rotation;
-            e.enableTeleport = enableTeleport;
-            e.forceDestinationPosition = forceDestinationPosition;
-            return e;
+            return new DestinationMarkerEventArgs
+            {
+                controllerReference = controllerReference,
+                distance = distance,
+                target = target,
+                raycastHit = raycastHit,
+                destinationPosition = position,
+                destinationRotation = rotation,
+                enableTeleport = enableTeleport,
+                forceDestinationPosition = forceDestinationPosition
+            };
         }
     }
 }

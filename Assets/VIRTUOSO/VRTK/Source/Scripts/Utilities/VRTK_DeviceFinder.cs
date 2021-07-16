@@ -37,47 +37,6 @@ namespace VRTK
         }
 
         /// <summary>
-        /// Possible headsets
-        /// </summary>
-        [System.Obsolete("`VRTK_DeviceFinder.Headsets` has been deprecated and has been replaced with a manufacturer string. This enum will be removed in a future version of VRTK.")]
-        public enum Headsets
-        {
-            /// <summary>
-            /// An unknown headset.
-            /// </summary>
-            Unknown,
-            /// <summary>
-            /// A summary of all Oculus Rift headset versions.
-            /// </summary>
-            OculusRift,
-            /// <summary>
-            /// A specific version of the Oculus Rift headset, the Consumer Version 1.
-            /// </summary>
-            OculusRiftCV1,
-            /// <summary>
-            /// A summary of all HTC Vive headset versions.
-            /// </summary>
-            Vive,
-            /// <summary>
-            /// A specific version of the HTC Vive headset, the first consumer version.
-            /// </summary>
-            ViveMV,
-            /// <summary>
-            /// A specific version of the HTC Vive headset, the first consumer version.
-            /// </summary>
-            ViveDVT,
-            /// <summary>
-            /// A specific version of the Oculus Rift headset, the rare ES07.
-            /// </summary>
-            OculusRiftES07
-        }
-
-        /// <summary>
-        /// Obsolete
-        /// </summary>
-        private static string cachedHeadsetType = "";
-
-        /// <summary>
         /// The GetCurrentControllerType method returns the current used ControllerType based on the SDK and headset being used.
         /// </summary>
         /// <param name="controllerReference">The reference to the controller to get type of.</param>

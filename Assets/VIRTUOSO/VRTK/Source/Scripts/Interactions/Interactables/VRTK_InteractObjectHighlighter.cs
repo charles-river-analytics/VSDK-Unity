@@ -3,6 +3,7 @@ namespace VRTK
 {
     using UnityEngine;
     using Highlighters;
+    using System;
 
     /// <summary>
     /// Event Payload
@@ -12,7 +13,7 @@ namespace VRTK
     /// <param name="affectingObject">The GameObject is initiating the highlight via an interaction.</param>
     /// <param name="objectToMonitor">The Interactable Object that is being interacted with.</param>
     /// <param name="affectedObject">The GameObject that is being highlighted.</param>
-    public struct InteractObjectHighlighterEventArgs
+    public class InteractObjectHighlighterEventArgs : EventArgs
     {
         public VRTK_InteractableObject.InteractionType interactionType;
         public Color highlightColor;
@@ -66,12 +67,6 @@ namespace VRTK
         public GameObject objectToHighlight;
         [Tooltip("An optional Highlighter to use when highlighting the specified Object. If this is left blank, then the first active highlighter on the same GameObject will be used, if one isn't found then a Material Color Swap Highlighter will be created at runtime.")]
         public VRTK_BaseHighlighter objectHighlighter;
-
-        [Header("Obsolete Settings")]
-
-        [System.Obsolete("`objectToAffect` has been replaced with `objectToHighlight`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public VRTK_InteractableObject objectToAffect;
 
         protected Color currentColour = Color.clear;
         protected VRTK_BaseHighlighter baseHighlighter;
@@ -158,11 +153,6 @@ namespace VRTK
 
         protected virtual void OnEnable()
         {
-#pragma warning disable 0618
-            objectToMonitor = (objectToMonitor == null ? objectToAffect : objectToMonitor);
-            objectToHighlight = (objectToHighlight == null && objectToAffect != null ? objectToAffect.gameObject : objectToHighlight);
-#pragma warning restore 0618
-
             objectToHighlight = (objectToHighlight != null ? objectToHighlight : gameObject);
             if (GetValidHighlighter() != baseHighlighter)
             {
@@ -226,13 +216,15 @@ namespace VRTK
         protected virtual InteractObjectHighlighterEventArgs SetEventArgs(VRTK_InteractableObject.InteractionType interactionType, GameObject affectingObject)
         {
             currentAffectingObject = affectingObject;
-            InteractObjectHighlighterEventArgs e;
-            e.interactionType = interactionType;
-            e.highlightColor = currentColour;
-            e.affectingObject = affectingObject;
-            e.objectToMonitor = objectToMonitor;
-            e.affectedObject = objectToHighlight;
-            return e;
+
+            return new InteractObjectHighlighterEventArgs
+            {
+                interactionType = interactionType,
+                highlightColor = currentColour,
+                affectingObject = affectingObject,
+                objectToMonitor = objectToMonitor,
+                affectedObject = objectToHighlight
+            };
         }
 
         protected virtual void NearTouchHighlightObject(object sender, InteractableObjectEventArgs e)

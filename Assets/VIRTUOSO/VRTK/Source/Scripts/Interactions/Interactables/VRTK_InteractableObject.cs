@@ -8,6 +8,7 @@ namespace VRTK
     using GrabAttachMechanics;
     using SecondaryControllerGrabActions;
     using CharlesRiverAnalytics.Virtuoso.InteractionAreas;
+    using CharlesRiverAnalytics.Virtuoso.Events;
 
     /// <summary>
     /// Event Payload
@@ -61,7 +62,7 @@ namespace VRTK
     ///
     /// `VRTK/Examples/013_Controller_UsingAndGrabbingMultipleObjects` shows multiple objects that can be grabbed by holding the buttons or grabbed by toggling the button click and also has objects that can have their Using state toggled to show how multiple items can be turned on at the same time.
     /// </example>
-    [AddComponentMenu("VRTK/Scripts/Interactions/Interactables/VRTK_InteractableObject")]
+    [AddComponentMenu("VRTK/Scripts/Interactions/Interactables/VRTK_InteractableObject"), SelectionBase]
     public class VRTK_InteractableObject : MonoBehaviour
     {
         /// <summary>
@@ -195,15 +196,6 @@ namespace VRTK
         public VRTK_ControllerEvents.ButtonAlias useOverrideButton = VRTK_ControllerEvents.ButtonAlias.Undefined;
         [Tooltip("Determines which controller can initiate a use action.")]
         public AllowedController allowedUseControllers = AllowedController.Both;
-
-        [Header("Obsolete Settings")]
-
-        [System.Obsolete("`VRTK_InteractableObject.objectHighlighter` has been replaced with `VRTK_InteractObjectHighlighter.objectHighlighter`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public Highlighters.VRTK_BaseHighlighter objectHighlighter;
-        [System.Obsolete("`VRTK_InteractableObject.touchHighlightColor` has been replaced with `VRTK_InteractObjectHighlighter.touchHighlight`. This parameter will be removed in a future version of VRTK.")]
-        [ObsoleteInspector]
-        public Color touchHighlightColor = Color.clear;
 
         protected Rigidbody interactableRigidbody;
         protected HashSet<GameObject> currentIgnoredColliders = new HashSet<GameObject>();
@@ -601,63 +593,6 @@ namespace VRTK
         }
 
         /// <summary>
-        /// The ToggleHighlight method is used to turn on or off the highlight of the Interactable Object.
-        /// </summary>
-        /// <param name="toggle">The state to determine whether to activate or deactivate the highlight. `true` will enable the highlight and `false` will remove the highlight.</param>
-        [System.Obsolete("`VRTK_InteractableObject.ToggleHighlight` has been replaced with `VRTK_InteractableObject.Highlight` and `VRTK_InteractableObject.Unhighlight`. This method will be removed in a future version of VRTK.")]
-        public virtual void ToggleHighlight(bool toggle, Color? highlightColor = null)
-        {
-            if (toggle)
-            {
-                Highlight((highlightColor != null ? (Color)highlightColor : Color.clear));
-            }
-            else
-            {
-                Unhighlight();
-            }
-        }
-
-        /// <summary>
-        /// The Highlight method turns on the highlighter attached to the Interactable Object with the given Color.
-        /// </summary>
-        /// <param name="highlightColor">The colour to apply to the highlighter.</param>
-        [System.Obsolete("`VRTK_InteractableObject.Highlight` has been replaced with `VRTK_InteractObjectHighlighter.Highlight`. This method will be removed in a future version of VRTK.")]
-        public virtual void Highlight(Color highlightColor)
-        {
-            VRTK_InteractObjectHighlighter interactObjectHighlighter = GetComponentInChildren<VRTK_InteractObjectHighlighter>();
-            if (interactObjectHighlighter != null)
-            {
-                interactObjectHighlighter.Highlight(highlightColor);
-            }
-        }
-
-        /// <summary>
-        /// The Unhighlight method turns off the highlighter attached to the Interactable Object.
-        /// </summary>
-        [System.Obsolete("`VRTK_InteractableObject.Unhighlight` has been replaced with `VRTK_InteractObjectHighlighter.Unhighlight`. This method will be removed in a future version of VRTK.")]
-        public virtual void Unhighlight()
-        {
-            VRTK_InteractObjectHighlighter interactObjectHighlighter = GetComponentInChildren<VRTK_InteractObjectHighlighter>();
-            if (interactObjectHighlighter != null)
-            {
-                interactObjectHighlighter.Unhighlight();
-            }
-        }
-
-        /// <summary>
-        /// The ResetHighlighter method is used to reset the currently attached highlighter.
-        /// </summary>
-        [System.Obsolete("`VRTK_InteractableObject.ResetHighlighter` has been replaced with `VRTK_InteractObjectHighlighter.ResetHighlighter`. This method will be removed in a future version of VRTK.")]
-        public virtual void ResetHighlighter()
-        {
-            VRTK_InteractObjectHighlighter interactObjectHighlighter = GetComponentInChildren<VRTK_InteractObjectHighlighter>();
-            if (interactObjectHighlighter != null)
-            {
-                interactObjectHighlighter.ResetHighlighter();
-            }
-        }
-
-        /// <summary>
         /// The PauseCollisions method temporarily pauses all collisions on the Interactable Object at grab time by removing the Interactable Object's Rigidbody's ability to detect collisions.
         /// </summary>
         /// <param name="delay">The time in seconds to pause the collisions for.</param>
@@ -975,16 +910,6 @@ namespace VRTK
                 startDisabled = true;
                 enabled = false;
             }
-
-            ///[Obsolete]
-#pragma warning disable 0618
-            if (touchHighlightColor != Color.clear && !GetComponent<VRTK_InteractObjectHighlighter>())
-            {
-                VRTK_InteractObjectHighlighter autoGenInteractHighlighter = gameObject.AddComponent<VRTK_InteractObjectHighlighter>();
-                autoGenInteractHighlighter.touchHighlight = touchHighlightColor;
-                autoGenInteractHighlighter.objectHighlighter = (objectHighlighter == null ? Highlighters.VRTK_BaseHighlighter.GetActiveHighlighter(gameObject) : objectHighlighter);
-            }
-#pragma warning restore 0618
         }
 
         protected virtual void OnEnable()
